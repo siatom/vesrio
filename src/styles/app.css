@@ -22,6 +22,81 @@
   background: var(--surface);
 }
 
+.side-dock {
+  display: flex;
+  flex: none;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.side-dock--left {
+  width: var(--sidebar-width);
+}
+
+.side-dock--right {
+  width: var(--inspector-width);
+}
+
+.side-dock > .sidebar {
+  width: var(--sidebar-width);
+}
+
+.side-dock > .inspector {
+  width: var(--inspector-width);
+}
+
+.dock-left-enter-active,
+.dock-left-leave-active,
+.dock-right-enter-active,
+.dock-right-leave-active {
+  transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: width;
+}
+
+.dock-left-enter-from,
+.dock-left-leave-to,
+.dock-right-enter-from,
+.dock-right-leave-to {
+  width: 0;
+}
+
+.dock-left-enter-active > .sidebar,
+.dock-left-leave-active > .sidebar,
+.dock-right-enter-active > .inspector,
+.dock-right-leave-active > .inspector {
+  transition:
+    opacity 200ms ease,
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dock-left-enter-from > .sidebar,
+.dock-left-leave-to > .sidebar {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.dock-right-enter-from > .inspector,
+.dock-right-leave-to > .inspector {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-left-enter-active,
+  .dock-left-leave-active,
+  .dock-right-enter-active,
+  .dock-right-leave-active {
+    transition-duration: 1ms;
+  }
+
+  .dock-left-enter-active > .sidebar,
+  .dock-left-leave-active > .sidebar,
+  .dock-right-enter-active > .inspector,
+  .dock-right-leave-active > .inspector {
+    transition-duration: 1ms;
+  }
+}
+
 .resize-handle {
   position: relative;
   z-index: 8;

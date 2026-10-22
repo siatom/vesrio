@@ -414,7 +414,11 @@ function onKeydown(event: KeyboardEvent) {
   >
     <TitleBar />
     <div class="app-body">
-      <Sidebar v-if="sidebarVisible" />
+      <Transition name="dock-left">
+        <div v-if="sidebarVisible" class="side-dock side-dock--left">
+          <Sidebar />
+        </div>
+      </Transition>
       <ResizeHandle
         v-if="sidebarVisible"
         side="left"
@@ -441,7 +445,11 @@ function onKeydown(event: KeyboardEvent) {
         @commit="commitInspectorWidth"
         @reset="resetInspectorWidth"
       />
-      <InspectorPanel v-if="inspectorVisible" />
+      <Transition name="dock-right">
+        <div v-if="inspectorVisible" class="side-dock side-dock--right">
+          <InspectorPanel />
+        </div>
+      </Transition>
     </div>
     <StatusBar />
 
