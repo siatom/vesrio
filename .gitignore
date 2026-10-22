@@ -33,3 +33,9 @@ Thumbs.db
 !.env.example
 *.pem
 *.key
+
+# dev worktrees
+.worktrees/
+
+# local debug artifacts
+.tmp-*
