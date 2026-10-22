@@ -59,7 +59,10 @@
   align-items: center;
   gap: 2px;
   flex: none;
-  margin-right: 4px;
+}
+
+.titlebar__view--end {
+  margin-left: 4px;
 }
 
 .titlebar__tabs {
