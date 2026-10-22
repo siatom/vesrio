@@ -60,7 +60,7 @@
 | --- | --- | --- | --- | --- |
 | X-01 | Fixed (Windows); In Review (V0.2) | keyring 曾只启用 `windows-native`，macOS/Linux 会退化为无持久化 mock | 已改为分平台原生后端并暴露 `credentialBackend/credentialError`；Windows roundtrip 通过，macOS/Linux 运行时待实机 | VES-057 |
 | X-02 | Open (V0.2) | 打包目标只有 NSIS | macOS/Linux 无法构建发行物 | VES-061 |
-| X-03 | Fixed (pending CI); In Review (V0.2) | Unix 保存曾只做 `rename`，未保留权限、未 fsync 父目录、后端未校验只读 | 已保留 mode、fsync 父目录、Rust 层拒绝只读；Linux/macOS 测试待 CI | VES-058 |
+| X-03 | Fixed (V0.2) | Unix 保存曾只做 `rename`，未保留权限、未 fsync 父目录、后端未校验只读 | 已保留 mode、fsync 父目录、Rust 层拒绝只读；CI run 39800957041 三平台通过 | VES-058 |
 | X-04 | Open (V0.2) | 关闭保护依赖 `beforeunload` | macOS/WKWebView 可能丢未保存内容 | VES-059 |
 | X-05 | Open (V0.2) | 桌面 E2E、校验和与 CI 均为 Windows 专用 | 三平台缺少可复现发布证据 | VES-066/067/070 |
 

@@ -30,7 +30,7 @@ V0.1 明确以 Windows 11 x64 首发，现有实现也围绕 Windows 验证：�
 ### VES-058 实现记录（2026-10-22）
 
 - Unix 在 `rename` 前用原文件 `Permissions` 覆盖临时文件，保留 mode/read-only 位；临时文件由同一用户创建，owner 不变，group 可能随目录默认值变化。
-- `rename` 后 best-effort fsync 父目录；文件数据已在替换前 `sync_all`。
+- `rename` 后 best-effort fsync 父目录；文件数据已在替换前 `sync_all`。CI run 39800957041 在 macOS arm64 与 Ubuntu 22.04/24.04 通过权限、只读与符号链接测试。
 - `DocumentStore::save` 与 `save_as` 在 Rust 层拒绝只读目标，返回 `permission_denied`；不依赖前端。
 - `open` 通过 `canonicalize` 解析符号链接并写回真实目标，链接本身保留。
 - 硬链接在替换后只更新目标目录项，其他链接仍指向旧 inode。
