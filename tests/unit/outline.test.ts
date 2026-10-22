@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { activeHeadingIndex, parseOutline } from '@/lib/outline'
+import {
+  activeHeadingIndex,
+  findHeadingOffset,
+  headingSlug,
+  parseOutline,
+} from '@/lib/outline'
 
 describe('parseOutline', () => {
   it('extracts nested ATX headings with offsets', () => {
@@ -42,5 +47,23 @@ describe('parseOutline', () => {
     expect(activeHeadingIndex(outline, 3)).toBe(1)
     expect(activeHeadingIndex(outline, 5)).toBe(2)
     expect(activeHeadingIndex(outline, 0)).toBe(-1)
+  })
+})
+
+describe('anchor links', () => {
+  it('builds GitHub-style slugs for Chinese and Latin headings', () => {
+    expect(headingSlug('1.1 小节')).toBe('11-小节')
+    expect(headingSlug('Hello, World!')).toBe('hello-world')
+  })
+
+  it('finds headings by slug and percent-encoded anchor', () => {
+    const text = '# 第一章\n\n正文\n\n## Hello, World!\n'
+    expect(findHeadingOffset(text, '第一章')).toBe(0)
+    expect(findHeadingOffset(text, 'hello-world')).toBe(text.indexOf('## Hello'))
+    expect(findHeadingOffset(text, encodeURIComponent('第一章'))).toBe(0)
+  })
+
+  it('returns null for unknown anchors', () => {
+    expect(findHeadingOffset('# A\n', 'missing')).toBeNull()
   })
 })

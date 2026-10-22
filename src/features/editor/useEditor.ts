@@ -1,19 +1,23 @@
 import { onBeforeUnmount, onMounted, shallowRef, watch, type Ref } from 'vue'
 import { EditorView } from '@codemirror/view'
 import type { EditorState } from '@codemirror/state'
+import { useSettingsStore } from '@/stores/settings'
 import { useWorkspaceStore } from '@/stores/workspace'
 import type { EditorHandle } from './editorRegistry'
 import { registerEditor } from './editorRegistry'
 import {
+  applyDocumentPath,
   applySourceMode,
   createEditorState,
   redoCommand,
   undoCommand,
 } from './editorSetup'
+import { refreshDiagramTheme } from './markdownMermaid'
 
 interface Session {
   epoch: number
   sourceMode: boolean
+  documentPath: string
   state: EditorState
   scrollTop: number
 }
@@ -24,6 +28,7 @@ function clamp(value: number, min: number, max: number): number {
 
 export function useEditor(container: Ref<HTMLElement | null>) {
   const workspace = useWorkspaceStore()
+  const settings = useSettingsStore()
   const view = shallowRef<EditorView | null>(null)
   const sessions = new Map<string, Session>()
   let boundId: string | null = null
@@ -121,10 +126,12 @@ export function useEditor(container: Ref<HTMLElement | null>) {
     if (existing && scroller()) existing.scrollTop = scroller()?.scrollTop ?? existing.scrollTop
     const state = createEditorState(documentId, tab.editorText, {
       sourceMode: tab.sourceMode,
+      documentPath: tab.document.path,
     })
     sessions.set(documentId, {
       epoch: tab.docEpoch,
       sourceMode: tab.sourceMode,
+      documentPath: tab.document.path,
       state,
       scrollTop: 0,
     })
@@ -160,6 +167,10 @@ export function useEditor(container: Ref<HTMLElement | null>) {
       applySourceMode(current, tab.sourceMode)
       session.sourceMode = tab.sourceMode
     }
+    if (session.documentPath !== tab.document.path) {
+      applyDocumentPath(current, tab.document.path)
+      session.documentPath = tab.document.path
+    }
     bindHandle(id)
     const range = current.state.selection.main
     workspace.updateSelection(id, {
@@ -183,7 +194,12 @@ export function useEditor(container: Ref<HTMLElement | null>) {
   })
 
   watch(
-    () => [workspace.activeId, workspace.activeTab?.docEpoch, workspace.activeTab?.sourceMode],
+    () => [
+      workspace.activeId,
+      workspace.activeTab?.docEpoch,
+      workspace.activeTab?.sourceMode,
+      workspace.activeTab?.document.path,
+    ],
     () => sync(),
     { flush: 'post' },
   )
@@ -194,6 +210,13 @@ export function useEditor(container: Ref<HTMLElement | null>) {
       for (const key of [...sessions.keys()]) {
         if (!ids.includes(key)) sessions.delete(key)
       }
+    },
+  )
+
+  watch(
+    () => settings.resolvedTheme,
+    (theme) => {
+      if (view.value) refreshDiagramTheme(view.value, theme)
     },
   )
 
