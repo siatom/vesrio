@@ -286,7 +286,7 @@ async function main() {
       await settingsDialog.getByLabel('Base URL').inputValue(),
       'https://api.deepseek.com',
     )
-    assert.equal(await settingsDialog.getByLabel('模型名称').inputValue(), 'deepseek-chat')
+    assert.equal(await settingsDialog.getByLabel('模型名称').inputValue(), 'deepseek-flash')
     checks += 1
     await page.keyboard.press('Escape')
     await settingsDialog.waitFor({ state: 'hidden' })

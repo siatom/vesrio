@@ -39,7 +39,7 @@ test.describe('desktop shell', () => {
     await expect(dialog).toContainText('API Key 只保存在 Windows 凭据管理器')
     await dialog.getByRole('button', { name: 'DeepSeek' }).click()
     await expect(dialog.getByLabel('Base URL')).toHaveValue('https://api.deepseek.com')
-    await expect(dialog.getByLabel('模型名称')).toHaveValue('deepseek-chat')
+    await expect(dialog.getByLabel('模型名称')).toHaveValue('deepseek-flash')
   })
 
   test('style card saves and reloads project rules', async ({ page }) => {

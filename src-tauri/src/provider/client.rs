@@ -13,7 +13,9 @@ use serde_json::json;
 use std::time::Duration;
 use tokio_util::sync::CancellationToken;
 
-const MAX_COMPLETION_CHARS: usize = 200_000;
+// DeepSeek may be configured for up to 384K output tokens. Chinese text is
+// roughly one character per token, so keep a 1M-character safety ceiling.
+const MAX_COMPLETION_CHARS: usize = 1_000_000;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ChatMessage {

@@ -112,7 +112,7 @@ Agent 只读：回答不会自动修改文档，也不会获得文件写入能�
 
 打开 `Ctrl + ,` →「模型服务」：
 
-- 默认预设：DeepSeek，Base URL `https://api.deepseek.com`，模型 `deepseek-chat`。
+- 默认预设：DeepSeek，Base URL `https://api.deepseek.com`，模型 `deepseek-flash`，最大输出 Token 默认 `384000`（384K）。
 - 也可点「OpenAI」切换为 `https://api.openai.com/v1` / `gpt-4o-mini`，或手动填写其它 OpenAI-compatible 地址。
 - 模型名称、超时、Temperature、最大输出 Token。
 - API Key：在「API Key」密码框粘贴。只写入 Windows 凭据管理器；界面只显示「已安全保存」。
