@@ -242,10 +242,13 @@ Tauri commands（src-tauri/src/commands.rs）
 | 外链执行 | Markdown 链接只跟随 http/https/mailto/tel 与本地 Markdown 文档；`javascript:` 等协议被拒绝，本地附件不直接启动 |
 | 远程图片 | 默认不自动请求；用户点击占位条后才加载，`img` 使用 `no-referrer` |
 | 资源读取 | 本地图片通过 Tauri asset protocol 提供，scope 覆盖用户打开的任意目录；仅用于 `<img>` 展示，不暴露文件内容给脚本 |
+| 图表渲染 | Mermaid 按需懒加载，使用 `securityLevel: 'strict'`，禁用交互回调；SVG 不执行图表内脚本 |
 
 CSP：`default-src 'self'`，脚本仅允许同源，图片允许 `asset:` / `data:` 与用户确认后的 `https:` / `http:`，样式允许内联（CodeMirror 需要），连接仅允许 IPC。
 
 数学公式由 KaTeX 在 WebView 内离线渲染，关闭 `trust` 且不执行公式中的 HTML；Markdown 源文保持不变。
+
+Mermaid 图表使用 `` ```mermaid `` 围栏，首次出现时才动态加载渲染依赖；图表 SVG 仅作为预览，点击后恢复源码。
 
 ## 8. 测试分层
 
