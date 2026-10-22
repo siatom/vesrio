@@ -31,6 +31,29 @@ test.describe('desktop shell', () => {
     await expect(page.locator('.inspector')).toBeVisible()
   })
 
+  test('resizes both sidebars by dragging and with the keyboard', async ({ page }) => {
+    await bootApp(page)
+    const sidebar = page.locator('.sidebar')
+    const inspector = page.locator('.inspector')
+    const sidebarBefore = (await sidebar.boundingBox())!.width
+    const inspectorBefore = (await inspector.boundingBox())!.width
+
+    const leftHandle = page.getByRole('separator', { name: '调整左侧栏宽度' })
+    const leftBox = (await leftHandle.boundingBox())!
+    await page.mouse.move(leftBox.x + leftBox.width / 2, leftBox.y + leftBox.height / 2)
+    await page.mouse.down()
+    await page.mouse.move(leftBox.x + leftBox.width / 2 + 60, leftBox.y + leftBox.height / 2, {
+      steps: 4,
+    })
+    await page.mouse.up()
+    expect((await sidebar.boundingBox())!.width).toBeGreaterThan(sidebarBefore + 40)
+
+    const rightHandle = page.getByRole('separator', { name: '调整右侧栏宽度' })
+    await rightHandle.focus()
+    await page.keyboard.press('ArrowLeft')
+    expect((await inspector.boundingBox())!.width).toBeGreaterThan(inspectorBefore)
+  })
+
   test('command palette finds and runs a command', async ({ page }) => {
     await bootApp(page)
     await page.keyboard.press('Control+k')

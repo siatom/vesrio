@@ -22,6 +22,48 @@
   background: var(--surface);
 }
 
+.resize-handle {
+  position: relative;
+  z-index: 8;
+  flex: none;
+  width: 9px;
+  margin: 0 -4px;
+  cursor: col-resize;
+  touch-action: none;
+  outline: none;
+}
+
+.resize-handle__line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  border-radius: var(--radius-full);
+  background: transparent;
+  transition: background-color 140ms ease;
+}
+
+.resize-handle:hover .resize-handle__line,
+.resize-handle:focus-visible .resize-handle__line,
+.resize-handle.is-dragging .resize-handle__line {
+  background: var(--accent);
+}
+
+.resize-handle:focus-visible .resize-handle__line {
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+body.is-resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+body.is-resizing * {
+  cursor: col-resize !important;
+}
+
 /* ---------- titlebar ---------- */
 
 .titlebar {
@@ -2149,18 +2191,7 @@
 
 /* ---------- responsive ---------- */
 
-@media (max-width: 1180px) {
-  :root {
-    --sidebar-width: 232px;
-    --inspector-width: 312px;
-  }
-}
-
 @media (max-width: 1020px) {
-  :root {
-    --sidebar-width: 214px;
-    --inspector-width: 288px;
-  }
   .editor-toolbar__path {
     display: none;
   }

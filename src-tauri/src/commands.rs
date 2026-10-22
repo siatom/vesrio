@@ -361,6 +361,18 @@ fn validate_setting(key: &str, value: &Value) -> AppResult<()> {
                 "editorWidth must be between 420 and 1400",
             )),
         },
+        "sidebarWidth" => match value.as_f64() {
+            Some(width) if (200.0..=480.0).contains(&width) => Ok(()),
+            _ => Err(AppError::invalid(
+                "sidebarWidth must be between 200 and 480",
+            )),
+        },
+        "inspectorWidth" => match value.as_f64() {
+            Some(width) if (260.0..=640.0).contains(&width) => Ok(()),
+            _ => Err(AppError::invalid(
+                "inspectorWidth must be between 260 and 640",
+            )),
+        },
         "focusMode" | "reviewMode" | "confirmBeforeSend" | "autoSnapshot" | "typewriterMode"
         | "sidebarOpen" | "outlineOpen" | "inspectorOpen" => {
             if value.is_boolean() {

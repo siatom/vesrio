@@ -24,6 +24,8 @@ function coerce(raw: Record<string, unknown>): Partial<AppSettings> {
   pick('confirmBeforeSend', (v) => typeof v === 'boolean')
   pick('autoSnapshot', (v) => typeof v === 'boolean')
   pick('typewriterMode', (v) => typeof v === 'boolean')
+  pick('sidebarWidth', (v) => typeof v === 'number' && v >= 200 && v <= 480)
+  pick('inspectorWidth', (v) => typeof v === 'number' && v >= 260 && v <= 640)
   pick('sidebarOpen', (v) => typeof v === 'boolean')
   pick('outlineOpen', (v) => typeof v === 'boolean')
   pick('inspectorOpen', (v) => typeof v === 'boolean')
