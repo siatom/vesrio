@@ -1,0 +1,8 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Vesrio E2E",
+  "identifier": "com.vesrio.app.e2e",
+  "bundle": {
+    "active": false
+  }
+}
