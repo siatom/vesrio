@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue'
 import { ChevronRight, FileText, Folder, FolderOpen } from 'lucide-vue-next'
 import type { FileNode } from '@/lib/types'
-import { formatBytes } from '@/lib/text'
 
 defineOptions({ name: 'FileTreeNode' })
 
@@ -47,7 +46,6 @@ function open() {
     >
       <FileText :size="14" class="tree-icon" />
       <span class="tree-label">{{ node.name }}</span>
-      <span v-if="node.size != null" class="tree-size">{{ formatBytes(node.size) }}</span>
     </button>
     <div v-if="node.isDir && expanded" class="tree-children" role="group">
       <FileTreeNode

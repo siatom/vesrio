@@ -362,13 +362,6 @@
   white-space: nowrap;
 }
 
-.tree-size {
-  margin-left: auto;
-  color: var(--text-faint);
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-}
-
 .recent-list {
   display: flex;
   flex-direction: column;
