@@ -69,6 +69,20 @@ Windows 桌面烟测仍是独立命令：`pnpm test:desktop`（VES-067 会按平
 - 产物：每次运行上传 `vesrio-web-<platform>`（`dist/`），保留 7 天。
 - 通过判定：只有当对应平台的实际运行日志为绿色时，才能把 V0.2 相关任务标为 `Done`；仅本地通过不等于 CI 通过。
 
+### 4.1 首次运行记录
+
+| 日期 | 提交 | 运行 | 结果 |
+| --- | --- | --- | --- |
+| 2026-10-22 | `e2df108` | [39794658980](https://github.com/siatom/vesrio/actions/runs/39794658980) | 四任务全部成功，15m22s |
+
+- `windows-x64`：PASS
+- `macos-arm64`：PASS
+- `ubuntu-22.04`：PASS
+- `ubuntu-24.04`：PASS
+- 四个 `vesrio-web-*` 产物均已上传。
+
+同一提交时间窗内的较早运行 `39794587669` 被并发策略取消，属于预期行为。
+
 ## 5. 已知限制
 
 1. CI 不运行 Tauri 桌面窗口，不能替代实机走查。
