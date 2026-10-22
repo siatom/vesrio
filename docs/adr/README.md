@@ -1,6 +1,6 @@
 # 架构决策记录（ADR）
 
-本目录冻结 V0.1 的关键技术边界。除负责人明确批准的新 ADR 外，实现不得绕过这些决策。
+本目录冻结 V0.1 与 V0.2 的关键技术边界。除负责人明确批准的新 ADR 外，实现不得绕过这些决策。
 
 | ADR | 主题 | 状态 |
 | --- | --- | --- |
@@ -10,6 +10,7 @@
 | [ADR-004](./ADR-004-stale-patch-rejection.md) | 过期补丁默认拒绝 | Accepted |
 | [ADR-005](./ADR-005-editor-model-decoupling.md) | 编辑器与模型解耦，模型无写权限 | Accepted |
 | [ADR-006](./ADR-006-byte-fidelity.md) | 文本事务优先，不做高风险格式往返 | Accepted |
+| [ADR-010](./ADR-010-cross-platform-support.md) | V0.2 跨平台支持与平台边界 | Proposed |
 
 补充实现决策（非冻结架构）：
 
