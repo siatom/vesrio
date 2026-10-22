@@ -8,6 +8,7 @@ use crate::document::{
     SnapshotStore,
 };
 use crate::error::{AppError, AppResult};
+use crate::platform;
 use crate::provider::secrets::SecretStore;
 use crate::provider::ProviderClient;
 use crate::security::Logger;
@@ -122,7 +123,7 @@ pub fn get_app_info(state: State<'_, AppState>) -> AppResult<AppInfo> {
         version: env!("CARGO_PKG_VERSION").into(),
         data_dir: display_path(&state.data_dir),
         log_path: display_path(state.logger.path()),
-        platform: format!("{}-{}", std::env::consts::OS, std::env::consts::ARCH),
+        platform: platform::label(),
     })
 }
 

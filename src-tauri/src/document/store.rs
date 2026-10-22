@@ -6,6 +6,7 @@ use super::encoding::{
     DecodedDocument, Encoding, Eol, MAX_DOCUMENT_BYTES,
 };
 use crate::error::{AppError, AppResult};
+use crate::platform::display_path;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::fs;
@@ -78,17 +79,6 @@ struct OpenDocument {
 #[derive(Default)]
 pub struct DocumentStore {
     docs: HashMap<String, OpenDocument>,
-}
-
-pub fn display_path(path: &Path) -> String {
-    let value = path.to_string_lossy();
-    #[cfg(windows)]
-    {
-        if let Some(stripped) = value.strip_prefix(r"\\?\") {
-            return stripped.to_string();
-        }
-    }
-    value.to_string()
 }
 
 fn modified_ms(metadata: &fs::Metadata) -> Option<i64> {

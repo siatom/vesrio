@@ -2,6 +2,7 @@ pub mod agent;
 mod commands;
 pub mod document;
 pub mod error;
+pub mod platform;
 pub mod provider;
 pub mod security;
 pub mod storage;
