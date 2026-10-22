@@ -14,10 +14,10 @@ impl Default for ProviderConfig {
     fn default() -> Self {
         Self {
             base_url: "https://api.deepseek.com".to_string(),
-            model: "deepseek-chat".to_string(),
+            model: "deepseek-flash".to_string(),
             timeout_ms: 60_000,
             temperature: 0.4,
-            max_tokens: 2048,
+            max_tokens: 384_000,
         }
     }
 }
@@ -38,9 +38,9 @@ impl ProviderConfig {
                 "timeout must be between 1 and 600 seconds",
             ));
         }
-        if self.max_tokens < 64 || self.max_tokens > 32_768 {
+        if self.max_tokens < 64 || self.max_tokens > 384_000 {
             return Err(crate::error::AppError::invalid(
-                "max tokens must be between 64 and 32768",
+                "max tokens must be between 64 and 384000",
             ));
         }
         Ok(())
@@ -163,7 +163,8 @@ mod tests {
     fn default_provider_targets_deepseek() {
         let config = ProviderConfig::default();
         assert_eq!(config.base_url, "https://api.deepseek.com");
-        assert_eq!(config.model, "deepseek-chat");
+        assert_eq!(config.model, "deepseek-flash");
+        assert_eq!(config.max_tokens, 384_000);
         config
             .validate()
             .expect("default provider config must be valid");

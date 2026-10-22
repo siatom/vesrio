@@ -33,14 +33,14 @@ const testError = ref('')
 
 const providerForm = reactive({
   baseUrl: 'https://api.deepseek.com',
-  model: 'deepseek-chat',
+  model: 'deepseek-flash',
   timeoutMs: 60000,
   temperature: 0.4,
-  maxTokens: 2048,
+  maxTokens: 384000,
 })
 
 const providerPresets = {
-  deepseek: { baseUrl: 'https://api.deepseek.com', model: 'deepseek-chat' },
+  deepseek: { baseUrl: 'https://api.deepseek.com', model: 'deepseek-flash' },
   openai: { baseUrl: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
 } as const
 
@@ -318,7 +318,7 @@ function close() {
                         v-model="providerForm.model"
                         class="input"
                         aria-label="模型名称"
-                        placeholder="deepseek-chat"
+                        placeholder="deepseek-flash"
                       />
                     </label>
                     <label class="field">
@@ -333,7 +333,7 @@ function close() {
                     </label>
                     <label class="field">
                       <span class="field__label">最大输出 Token</span>
-                      <input v-model.number="providerForm.maxTokens" class="input" type="number" min="64" max="32768" step="64" />
+                      <input v-model.number="providerForm.maxTokens" class="input" type="number" min="64" max="384000" step="64" />
                     </label>
                   </div>
                   <label class="field">

@@ -331,7 +331,7 @@ export async function mockInvoke<T>(command: string, args: Record<string, unknow
         model: 'mock-writer',
         timeoutMs: 60000,
         temperature: 0.4,
-        maxTokens: 2048,
+        maxTokens: 384000,
         hasApiKey: true,
       } satisfies ProviderConfigView as T
 
