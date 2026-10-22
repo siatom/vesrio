@@ -12,6 +12,7 @@ import {
 import { api } from '@/lib/api'
 import type { AppInfo, ProviderConfigView } from '@/lib/types'
 import { friendlyMessage } from '@/lib/errors'
+import { shortcutModifier } from '@/lib/platform'
 import { useSettingsStore } from '@/stores/settings'
 import { useUiStore } from '@/stores/ui'
 
@@ -403,8 +404,8 @@ function close() {
                   <h3>版本</h3>
                   <p class="settings-help">
                     {{ appInfo?.name ?? 'Vesrio' }} {{ appInfo?.version ?? '0.1.0' }} ·
-                    {{ appInfo?.platform ?? 'win32-x64' }} ·
-                    <kbd>Ctrl</kbd> + <kbd>/</kbd> 查看快捷键
+                    {{ appInfo?.platform ?? 'unknown' }} ·
+                    <kbd>{{ shortcutModifier(appInfo?.platform) }}</kbd> + <kbd>/</kbd> 查看快捷键
                   </p>
                 </section>
               </template>
