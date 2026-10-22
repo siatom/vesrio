@@ -26,6 +26,7 @@
 ### 3.1 API Key
 
 - 存储：`provider::secrets::KeyringStore` → Windows Credential Manager，service `com.vesrio.app`，account `provider-default`。
+- 测试隔离：仅 debug 构建允许用 `VESRIO_SECRET_SERVICE` 指向一次性 service，桌面 E2E 不读取/覆盖真实 Key；release 构建忽略该环境变量。
 - SQLite 的 `provider_configs` 表无 key 列；`get_provider_config` 只返回 `hasApiKey`。
 - 前端输入框为 `type="password"`，保存后清空；界面只显示「已安全保存」。
 - 清除 Key：设置页「移除 API Key」调用 `delete_credential`。

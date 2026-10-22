@@ -15,8 +15,19 @@ pub struct KeyringStore {
 
 impl Default for KeyringStore {
     fn default() -> Self {
+        // Desktop E2E builds use a throwaway credential entry so tests never
+        // read or overwrite the user's real API key. Release builds always use
+        // the fixed production service name.
+        let service = if cfg!(debug_assertions) {
+            std::env::var("VESRIO_SECRET_SERVICE")
+                .ok()
+                .filter(|value| !value.trim().is_empty())
+                .unwrap_or_else(|| "com.vesrio.app".into())
+        } else {
+            "com.vesrio.app".into()
+        };
         Self {
-            service: "com.vesrio.app".into(),
+            service,
             account: "provider-default".into(),
         }
     }

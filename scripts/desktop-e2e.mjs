@@ -107,6 +107,7 @@ async function main() {
       ...process.env,
       WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS: `--remote-debugging-port=${port}`,
       WEBVIEW2_USER_DATA_FOLDER: webviewDir,
+      VESRIO_SECRET_SERVICE: 'com.vesrio.app.e2e',
     },
     stdio: 'ignore',
   })
@@ -278,9 +279,17 @@ async function main() {
     checks += 1
 
     await page.keyboard.press('Control+,')
-    await page.getByRole('dialog', { name: '设置' }).waitFor()
+    const settingsDialog = page.getByRole('dialog', { name: '设置' })
+    await settingsDialog.waitFor()
+    await settingsDialog.getByRole('button', { name: '模型服务' }).click()
+    assert.equal(
+      await settingsDialog.getByLabel('Base URL').inputValue(),
+      'https://api.deepseek.com',
+    )
+    assert.equal(await settingsDialog.getByLabel('模型名称').inputValue(), 'deepseek-chat')
+    checks += 1
     await page.keyboard.press('Escape')
-    await page.getByRole('dialog', { name: '设置' }).waitFor({ state: 'hidden' })
+    await settingsDialog.waitFor({ state: 'hidden' })
     checks += 1
 
     await page.screenshot({ path: screenshotPath, fullPage: false })
