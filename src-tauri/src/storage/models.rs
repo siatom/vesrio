@@ -13,8 +13,8 @@ pub struct ProviderConfig {
 impl Default for ProviderConfig {
     fn default() -> Self {
         Self {
-            base_url: "https://api.openai.com/v1".to_string(),
-            model: "gpt-4o-mini".to_string(),
+            base_url: "https://api.deepseek.com".to_string(),
+            model: "deepseek-chat".to_string(),
             timeout_ms: 60_000,
             temperature: 0.4,
             max_tokens: 2048,
@@ -153,4 +153,19 @@ pub struct ConversationRecord {
     pub title: String,
     pub created_at: String,
     pub updated_at: String,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_provider_targets_deepseek() {
+        let config = ProviderConfig::default();
+        assert_eq!(config.base_url, "https://api.deepseek.com");
+        assert_eq!(config.model, "deepseek-chat");
+        config
+            .validate()
+            .expect("default provider config must be valid");
+    }
 }

@@ -32,12 +32,21 @@ const testResult = ref('')
 const testError = ref('')
 
 const providerForm = reactive({
-  baseUrl: 'https://api.openai.com/v1',
-  model: 'gpt-4o-mini',
+  baseUrl: 'https://api.deepseek.com',
+  model: 'deepseek-chat',
   timeoutMs: 60000,
   temperature: 0.4,
   maxTokens: 2048,
 })
+
+const providerPresets = {
+  deepseek: { baseUrl: 'https://api.deepseek.com', model: 'deepseek-chat' },
+  openai: { baseUrl: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
+} as const
+
+function applyPreset(name: keyof typeof providerPresets) {
+  Object.assign(providerForm, providerPresets[name])
+}
 
 const tabs: { id: Tab; label: string; icon: typeof Sparkles }[] = [
   { id: 'appearance', label: '外观', icon: Sparkles },
@@ -284,14 +293,33 @@ function close() {
                   <p class="settings-help">
                     Vesrio 直接从本机访问你填写的基础地址。API Key 只保存在 Windows 凭据管理器，不进入 SQLite、JSON 或日志。
                   </p>
+                  <div class="provider-presets" role="group" aria-label="服务预设">
+                    <span class="settings-help">快速填充：</span>
+                    <button class="btn btn--small" type="button" @click="applyPreset('deepseek')">
+                      DeepSeek
+                    </button>
+                    <button class="btn btn--small" type="button" @click="applyPreset('openai')">
+                      OpenAI
+                    </button>
+                  </div>
                   <label class="field">
                     <span class="field__label">Base URL</span>
-                    <input v-model="providerForm.baseUrl" class="input" placeholder="https://api.openai.com/v1" />
+                    <input
+                      v-model="providerForm.baseUrl"
+                      class="input"
+                      aria-label="Base URL"
+                      placeholder="https://api.deepseek.com"
+                    />
                   </label>
                   <div class="field-grid">
                     <label class="field">
                       <span class="field__label">模型名称</span>
-                      <input v-model="providerForm.model" class="input" placeholder="gpt-4o-mini" />
+                      <input
+                        v-model="providerForm.model"
+                        class="input"
+                        aria-label="模型名称"
+                        placeholder="deepseek-chat"
+                      />
                     </label>
                     <label class="field">
                       <span class="field__label">超时（毫秒）</span>
@@ -315,6 +343,7 @@ function close() {
                       class="input"
                       type="password"
                       autocomplete="off"
+                      aria-label="API Key"
                       placeholder="留空则保持现有 Key"
                     />
                   </label>
