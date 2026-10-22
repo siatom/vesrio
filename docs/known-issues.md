@@ -7,8 +7,8 @@
 
 | ID | 状态 | 问题 | 影响 | 下一步 |
 | --- | --- | --- | --- | --- |
-| R-01 | Not Verified | 未在干净 Windows 11 主机执行安装 → 启动 → 升级 → 卸载全流程 | 无法证明安装器在无开发环境的机器可用 | 按 [release-checklist.md](./release-checklist.md) 在干净 VM/实机执行 |
-| R-02 | Not Verified | 未对安装后的桌面应用执行完整六条用户旅程（当前 E2E 在 Chrome + mock 后端） | WebView2、文件对话框、凭据管理器与真实模型路径仍可能有差异 | 在 Windows 11 实机按用户指南逐项走查并记录 |
+| R-01 | Not Verified | 未在干净 Windows 11 主机执行安装 → 启动 → 升级 → 卸载全流程 | 开发机临时目录已通过安装/启动/卸载与 `.md` 保留；干净环境与升级迁移仍未证明 | 按 [release-checklist.md](./release-checklist.md) 在干净 VM/实机执行 |
+| R-02 | Not Verified | 未对安装后的桌面应用执行完整六条用户旅程 | 已用真实 WebView2 + Rust 验证打开/编辑/保存/冲突/快照/风格卡/AI 失败安全；真实模型、文件对话框与安装后完整走查仍缺 | 在 Windows 11 实机按用户指南逐项走查并记录 |
 | R-03 | Not Verified | 未进行至少 3 个真实长文档场景的内测 | 真实文风、长上下文与模型质量反馈不足 | 邀请真实用户，按缺陷分级处理 |
 | R-04 | Open | NSIS 安装包未做代码签名 | Windows SmartScreen 可能提示「未知发布者」 | 发布前配置 EV/OV 证书并签名 |
 

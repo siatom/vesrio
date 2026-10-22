@@ -40,11 +40,24 @@ node scripts/checksums.mjs
 | 许可证 | `node scripts/check-licenses.mjs` | PASS | 794 packages，0 violation |
 | 安装包构建 | `pnpm tauri build` | PASS | NSIS 2.96 MiB |
 | 启动冒烟（未安装） | 直接运行 `src-tauri/target/release/vesrio.exe` 8 秒 | PASS | 进程存活；创建 `%APPDATA%\com.vesrio.app\{vesrio.db,snapshots,logs}` |
+| 桌面 E2E（真实 Tauri） | `pnpm test:desktop` | PASS | 19 checks：打开/编辑/撤销/保存、CRLF 字节比对、外部冲突、快照恢复、风格卡、AI 未配置失败安全、主题/专注/设置 |
+| NSIS 安装/启动/卸载（临时目录） | `Vesrio_0.1.0_x64-setup.exe /S /D=%TEMP%\vesrio-install-test` | PASS | 安装退出 0；安装后进程存活；卸载退出 0；安装目录移除；用户 `.md` 存在且 SHA-256 不变 |
 | 生产包不含 mock | `rg "mockInvoke|VITE_MOCK_BACKEND" dist/assets` | PASS | 无匹配 |
 
 > E2E 使用开发 mock 后端，验证 UI 状态机与时序；真实 Rust 命令由 `cargo test` 覆盖。二者不能互相替代。
 
-## 3. 人工门禁（尚未执行）
+## 3. 人工门禁（部分执行）
+
+### 3.1 已在开发机执行（临时目录，非干净主机）
+
+- [x] NSIS 静默安装到 `%TEMP%\vesrio-install-test`，退出码 0。
+- [x] 安装后的 `vesrio.exe` 启动并存活 6 秒。
+- [x] 运行 `uninstall.exe /S`，退出码 0，安装目录被移除。
+- [x] 安装在安装目录外的用户 `.md` 未被删除，SHA-256 不变。
+- [x] 卸载后无 Vesrio 开始菜单/桌面快捷方式残留，无 HKCU 卸载项残留。
+
+### 3.2 仍需在干净 Windows 11 主机/VM 执行
+
 
 在干净 Windows 11 x64 主机/VM 上逐项执行并记录系统版本、日志路径与截图：
 

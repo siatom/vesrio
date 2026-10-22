@@ -16,7 +16,7 @@ V0.1 功能实现与自动化验证已完成：
 - Windows x64 NSIS 安装包可构建。
 
 尚需真实设备/真实用户完成的事项见 [docs/known-issues.md](./docs/known-issues.md) 与 [docs/release-checklist.md](./docs/release-checklist.md)：
-安装/升级/卸载的干净主机验证、Windows 11 桌面实机用户旅程、真实用户内测。
+开发机临时目录已通过安装/启动/卸载与用户 `.md` 保留验证；干净主机、升级迁移、完整桌面用户旅程与真实用户内测仍待完成。
 
 ## 技术栈
 
@@ -63,6 +63,7 @@ pnpm typecheck
 pnpm lint
 pnpm test                 # Vitest 单元测试
 pnpm test:e2e             # Playwright E2E（使用本机 Chrome + 开发 mock 后端）
+pnpm test:desktop         # 真实 Tauri/WebView2 桌面 E2E（隔离测试标识）
 pnpm build
 
 # Rust（在 src-tauri 下）

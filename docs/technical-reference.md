@@ -249,9 +249,12 @@ CSP：`default-src 'self'`，脚本仅允许同源，图片允许 `asset:` / `da
 | Rust 单元/集成 | `src-tauri/src/**/tests`、`src-tauri/tests/` | 编码、原子保存、DB 迁移、状态机、偏移、Prompt、SSE、脱敏、10 MB 性能、快照重启 |
 | 前端单元 | `tests/unit/` | 文本/大纲/Diff/错误/设置/工作区/建议取消竞态 |
 | E2E | `tests/e2e/` | 启动、编辑保存、建议接受/拒绝/过期/取消、多候选、快照、主题、命令面板、Agent 引用 |
+| 桌面 E2E | `scripts/desktop-e2e.mjs` | 真实 WebView2 + Rust：打开 CRLF 文档、编辑/撤销/保存、字节比对、快照、主题、专注模式、设置 |
 | 黄金语料 | `tests/fixtures/markdown/` | 24 个样本的打开—不编辑—保存字节指纹 |
 
 E2E 使用 `VITE_MOCK_BACKEND=true` + 本机 Chrome，仅验证 UI 与交互时序；Rust 后端由 `cargo test` 验证。Mock 不会进入生产构建。
+
+`pnpm test:desktop` 使用 `src-tauri/tauri.e2e.conf.json` 构建隔离标识（`com.vesrio.app.e2e`）的 debug 应用，通过 WebView2 CDP 驱动真实 Rust 文件服务，并在结束时清理测试数据目录。它不会替代干净主机安装/卸载验证。
 
 ## 9. 版本与发布
 
