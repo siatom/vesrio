@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-22",
+  "samples": {
+    "01-chinese-long.md": {
+      "sha256": "d86cf980dbf19b22e64f27f13d1cf64ecd18aec70e983d2b5ca433defc698ebf",
+      "bytes": 731
+    },
+    "02-emoji.md": {
+      "sha256": "46ec76d863c00a9e7944a791ee00e3ddfe053c78ddbeba5a0e24091dc30d0b54",
+      "bytes": 308
+    },
+    "03-crlf.md": {
+      "sha256": "c48cd1ff92bd3cc9263efa93700816a81737fcd397de4a15fd68e0ed0ea19ab1",
+      "bytes": 163
+    },
+    "04-bom.md": {
+      "sha256": "d60a7554c7e9c6ea97b9103c74162cb271827800fcc1873d039c987cbb6ca2c8",
+      "bytes": 163
+    },
+    "05-frontmatter.md": {
+      "sha256": "bee6e2ec19e9dd59aa6e1fae6c9082dfc605fdd305cc197f6d4177192bd7bd03",
+      "bytes": 216
+    },
+    "06-gfm-table.md": {
+      "sha256": "d11fe2475e92ac46df6b5cad41e7205cca58c03ec2ae7f15e94f69aa9416d69c",
+      "bytes": 245
+    },
+    "07-code-fence.md": {
+      "sha256": "93ee3cc668abfa8aae4b09fc692429f300c4fe45fc8cabcaefddb06f30f9404a",
+      "bytes": 257
+    },
+    "08-math.md": {
+      "sha256": "83df3511371f6c64add2e17c02e61c881af81c0cc93ad30e35221d9fbeb6b8c3",
+      "bytes": 177
+    },
+    "09-footnotes.md": {
+      "sha256": "8871bc4b5e754e0e0e17eb3ff41ea817a4ab29a6b7ada494e4a14ee72d79944d",
+      "bytes": 252
+    },
+    "10-links-images.md": {
+      "sha256": "6bb7de54b842c8ad8c2ee1f6f4e272703b33515212ef24dd8c854ef685b40076",
+      "bytes": 333
+    },
+    "11-empty.md": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "12-long-paragraph.md": {
+      "sha256": "bdd14ea1bac00c22b567f3863b56a6c424da3af6ed947059e31f06eb4752cca9",
+      "bytes": 8845
+    },
+    "13-nested-lists.md": {
+      "sha256": "cafeedf013483dd6d4cab6774e58710d54b2a884e94369366040db627a71d086",
+      "bytes": 236
+    },
+    "14-mixed-eol.md": {
+      "sha256": "c566ebb052217dd2c8f260e316752bbd9341a46b2210dce9cdbfaef542120b2d",
+      "bytes": 76
+    },
+    "15-no-trailing-newline.md": {
+      "sha256": "9dccbc9ef89bd18b8dd3a729b6fbe60a3877b299522d80705a87b2c0785e70e4",
+      "bytes": 58
+    },
+    "16-combining.md": {
+      "sha256": "276aa278b73430f08efe5b0ee43a8185151b9c0078b9916d5228b73a182e0ca9",
+      "bytes": 237
+    },
+    "17-blockquote.md": {
+      "sha256": "17808a1346ac29887a50edff30abe38e35e55dfa83965dddec25ec7ba8812351",
+      "bytes": 182
+    },
+    "18-html-unknown.md": {
+      "sha256": "4a38fa3f4adae85ea5da5b475e4a6d312376e2c2dc1587b7ea7991d6f1672f49",
+      "bytes": 331
+    },
+    "19-headings.md": {
+      "sha256": "4c004934688b480bea142e24e1973ec6e751e648ffc9aa216baaefb48cc53d16",
+      "bytes": 205
+    },
+    "20-mixed-syntax.md": {
+      "sha256": "5bad4db8e8cca6fe04d02c9616c46a36536201bc57b4334959c579331269f5f8",
+      "bytes": 382
+    },
+    "21-windows-paths.md": {
+      "sha256": "8768915d226798f080283c6c5780f62db02e8815d5e4419c27de69221dc4a164",
+      "bytes": 272
+    },
+    "22-unicode-tricky.md": {
+      "sha256": "bbd4241dca3799c4be339b4b95eadda189e35298e45e27b33ba5271db36b7c94",
+      "bytes": 286
+    },
+    "23-tabs-indent.md": {
+      "sha256": "f21c3dcaa6d85cd318d2e8f84cc46f8dce9d61c92f818a1fae91ee8e13827948",
+      "bytes": 132
+    },
+    "24-setext-and-rules.md": {
+      "sha256": "a3b89db7ce56c98078a7b8b14161e1eaaa11b9063c8fab107ee638ab5e2acff8",
+      "bytes": 97
+    }
+  }
+}

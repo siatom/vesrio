@@ -1,0 +1,35 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+dist/
+coverage/
+*.local
+src-tauri/target/
+src-tauri/gen/schemas/
+test-results/
+playwright-report/
+blob-report/
+
+# logs & runtime data
+*.log
+logs/
+*.db
+*.db-shm
+*.db-wal
+*.db.bak*
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key

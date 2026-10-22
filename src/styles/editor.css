@@ -1,0 +1,77 @@
+.editor-host .cm-editor {
+  height: 100%;
+}
+
+.editor-host .cm-scroller {
+  scroll-behavior: auto;
+}
+
+.editor-host .cm-content {
+  min-height: 100%;
+}
+
+.editor-host .cm-line {
+  scroll-margin-block: 30vh;
+}
+
+.editor-host .cm-selectionMatch {
+  background: var(--search-match);
+}
+
+.editor-host .cm-matchingBracket {
+  background: var(--accent-soft);
+  outline: 1px solid var(--accent-soft);
+}
+
+.editor-host .cm-focused {
+  outline: none;
+}
+
+.editor-host .cm-panels {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.editor-host .cm-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.editor-host .cm-search label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.is-focus .editor-host .cm-content {
+  padding-top: 12px;
+}
+
+.is-focus .titlebar__tabs {
+  opacity: 0.75;
+}
+
+.is-review .editor-host .cm-content {
+  max-width: min(var(--editor-measure), 660px);
+}
+
+.is-review .editor-host .cm-scroller {
+  background-image: linear-gradient(var(--accent-soft), transparent 160px);
+  background-repeat: no-repeat;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

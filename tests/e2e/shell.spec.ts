@@ -1,0 +1,101 @@
+import { expect, test } from '@playwright/test'
+import { bootApp, editorText } from './helpers'
+
+test.describe('desktop shell', () => {
+  test('switches theme, toggles focus mode, and restores panels with the keyboard', async ({ page }) => {
+    await bootApp(page)
+    await expect(page.locator('.sidebar')).toBeVisible()
+    await page.getByRole('button', { name: '切换主题' }).click()
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+
+    await page.keyboard.press('Control+Shift+f')
+    await expect(page.locator('.sidebar')).toBeHidden()
+    await expect(page.locator('.inspector')).toBeHidden()
+    await page.keyboard.press('Escape')
+    await expect(page.locator('.sidebar')).toBeVisible()
+  })
+
+  test('command palette finds and runs a command', async ({ page }) => {
+    await bootApp(page)
+    await page.keyboard.press('Control+k')
+    const palette = page.locator('.palette')
+    await expect(palette).toBeVisible()
+    await palette.locator('.palette__input').fill('设置')
+    await expect(palette.locator('.palette__item').first()).toContainText('打开设置')
+    await page.keyboard.press('Enter')
+    await expect(page.getByRole('dialog', { name: '设置' })).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog', { name: '设置' })).toBeHidden()
+  })
+
+  test('settings show saved key state and never print the key', async ({ page }) => {
+    await bootApp(page)
+    await page.getByRole('button', { name: '设置' }).click()
+    const dialog = page.getByRole('dialog', { name: '设置' })
+    await expect(dialog).toBeVisible()
+    await dialog.getByRole('button', { name: '模型服务' }).click()
+    await expect(dialog).toContainText('已安全保存')
+    await expect(dialog.locator('input[type="password"]')).toHaveValue('')
+    await expect(dialog).toContainText('API Key 只保存在 Windows 凭据管理器')
+  })
+
+  test('style card saves and reloads project rules', async ({ page }) => {
+    await bootApp(page)
+    await page.locator('.sidebar').getByRole('button', { name: /项目风格卡/ }).click()
+    const dialog = page.getByRole('dialog', { name: '项目风格卡' })
+    await expect(dialog).toBeVisible()
+    await dialog.getByPlaceholder('例如：平实、克制、适量举例').fill('克制、技术准确')
+    await dialog.getByRole('button', { name: '保存风格卡' }).click()
+    await expect(
+      page.getByRole('status').filter({ hasText: '风格卡已保存' }),
+    ).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(dialog).toBeHidden()
+
+    await page.locator('.sidebar').getByRole('button', { name: /项目风格卡/ }).click()
+    await expect(
+      page.getByRole('dialog', { name: '项目风格卡' }).getByPlaceholder('例如：平实、克制、适量举例'),
+    ).toHaveValue('克制、技术准确')
+  })
+
+  test('shortcuts dialog is reachable from the keyboard', async ({ page }) => {
+    await bootApp(page)
+    await page.keyboard.press('Control+/')
+    await expect(page.getByRole('dialog', { name: '快捷键' })).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog', { name: '快捷键' })).toBeHidden()
+  })
+
+  test('creates and restores a manual snapshot from the revisions panel', async ({ page }) => {
+    await bootApp(page)
+    const before = await editorText(page)
+    await page.getByRole('tab', { name: '修订' }).click()
+    await page.getByRole('button', { name: '创建快照' }).last().click()
+    await expect(page.locator('.snapshot-item')).toHaveCount(1)
+    await page.locator('.snapshot-item').getByRole('button', { name: '恢复' }).click()
+    await page.getByRole('button', { name: '恢复', exact: true }).last().click()
+    await expect(
+      page.getByRole('status').filter({ hasText: '已恢复到快照' }),
+    ).toBeVisible()
+    expect(await editorText(page)).toBe(before)
+  })
+
+  test('source mode reveals Markdown markers', async ({ page }) => {
+    await bootApp(page)
+    // Live preview hides markers on quiet lines; the caret's own line stays raw.
+    await page.evaluate(() => {
+      const editor = (window as unknown as {
+        __vesrioEditor?: {
+          getText: () => string
+          selectRange: (from: number, to: number) => void
+        }
+      }).__vesrioEditor
+      if (!editor) throw new Error('editor test hook missing')
+      const offset = editor.getText().indexOf('文屿是一个')
+      editor.selectRange(offset, offset)
+    })
+    await expect(page.locator('.cm-content')).not.toContainText('# 欢迎来到文屿')
+    await page.getByRole('button', { name: '源码' }).click()
+    await expect(page.locator('.cm-content')).toContainText('# 欢迎来到文屿')
+  })
+})
