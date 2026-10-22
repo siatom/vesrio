@@ -40,7 +40,7 @@ node scripts/checksums.mjs
 | 许可证 | `node scripts/check-licenses.mjs` | PASS | 794 packages，0 violation |
 | 安装包构建 | `pnpm tauri build` | PASS | NSIS 2.96 MiB |
 | 启动冒烟（未安装） | 直接运行 `src-tauri/target/release/vesrio.exe` 8 秒 | PASS | 进程存活；创建 `%APPDATA%\com.vesrio.app\{vesrio.db,snapshots,logs}` |
-| 桌面 E2E（真实 Tauri） | `pnpm test:desktop` | PASS | 19 checks：打开/编辑/撤销/保存、CRLF 字节比对、外部冲突、快照恢复、风格卡、AI 未配置失败安全、主题/专注/设置 |
+| 桌面 E2E（真实 Tauri） | `pnpm test:desktop` | PASS | 20 checks：打开/编辑/撤销/保存、CRLF 字节比对、外部冲突、快照恢复、风格卡、AI 未配置失败安全、主题/专注/设置 |
 | NSIS 安装/启动/卸载（临时目录） | `Vesrio_0.1.0_x64-setup.exe /S /D=%TEMP%\vesrio-install-test` | PASS | 安装退出 0；安装后进程存活；卸载退出 0；安装目录移除；用户 `.md` 存在且 SHA-256 不变 |
 | 生产包不含 mock | `rg "mockInvoke|VITE_MOCK_BACKEND" dist/assets` | PASS | 无匹配 |
 

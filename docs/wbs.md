@@ -187,7 +187,7 @@
 | VES-043～046（E5） | Done | 键盘/焦点、主题与排版、设置页、专注/审阅模式走查 |
 | VES-047 | Done | 10 MB 打开 714 ms / 无编辑保存 701 ms；5 万字插入 27.8 ms、40 次跳转 38.7 ms |
 | VES-048 | In Review | 写失败、外部冲突、断网/Provider 500、取消、快照损坏已有测试；进程崩溃演练待实机 |
-| VES-049 | Needs Review | Chrome E2E、release 启动冒烟、真实 WebView2/Rust 桌面 E2E（19 checks：CRLF 保存、冲突、快照恢复、风格卡、AI 失败安全）通过；六条完整旅程与真实模型仍未在安装后应用执行 |
+| VES-049 | Needs Review | Chrome E2E、release 启动冒烟、真实 WebView2/Rust 桌面 E2E（20 checks：CRLF 保存、冲突、快照恢复、风格卡、AI 失败安全）通过；六条完整旅程与真实模型仍未在安装后应用执行 |
 | VES-050 | In Review | NSIS 临时目录静默安装、安装后启动、卸载清理、用户 `.md` 保留均通过；干净主机与升级迁移未验证，安装包未签名 |
 | VES-051 | Done | `README.md`、`docs/user-guide.md`、已知问题、恢复说明 |
 | VES-052 | Done | 安全审计与许可证报告完成（794 包，0 违规）；签名仍为发布前事项 |
@@ -200,7 +200,7 @@
 pnpm typecheck / lint / build                 PASS
 pnpm test                                     PASS  7 files / 33 tests
 pnpm test:e2e                                 PASS  16 tests
-pnpm test:desktop                             PASS  19 checks（真实 WebView2 + Rust）
+pnpm test:desktop                             PASS  20 checks（真实 WebView2 + Rust）
 NSIS 临时目录安装/启动/卸载                     PASS  用户 .md 保留且哈希不变
 node scripts/check-golden.mjs                 PASS  24 samples
 cargo fmt --check / clippy -D warnings        PASS

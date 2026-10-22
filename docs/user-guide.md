@@ -112,12 +112,13 @@ Agent 只读：回答不会自动修改文档，也不会获得文件写入能�
 
 打开 `Ctrl + ,` →「模型服务」：
 
-- Base URL：OpenAI-compatible 接口地址，例如 `https://api.openai.com/v1`。
+- 默认预设：DeepSeek，Base URL `https://api.deepseek.com`，模型 `deepseek-chat`。
+- 也可点「OpenAI」切换为 `https://api.openai.com/v1` / `gpt-4o-mini`，或手动填写其它 OpenAI-compatible 地址。
 - 模型名称、超时、Temperature、最大输出 Token。
-- API Key：只写入 Windows 凭据管理器；界面只显示「已安全保存」。
-- 「测试连接」会请求模型列表，验证地址与凭据。
+- API Key：在「API Key」密码框粘贴。只写入 Windows 凭据管理器；界面只显示「已安全保存」。
+- 保存配置后点「测试连接」，会请求模型列表，验证地址与凭据。
 
-API Key 不会进入 SQLite、JSON 配置或日志。删除 Key 后，已保存的其它配置保留。
+DeepSeek API Key 从 [platform.deepseek.com](https://platform.deepseek.com/api_keys) 获取。API Key 不会进入 SQLite、JSON 配置或日志。删除 Key 后，已保存的其它配置保留。
 
 ## 10. 数据位置与恢复
 

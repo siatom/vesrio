@@ -75,7 +75,7 @@ Tauri commands（src-tauri/src/commands.rs）
 | `save_provider_config` | `config`, `apiKey?`, `removeApiKey` | `ProviderConfigView` |
 | `test_provider` | — | `{ host, models }` |
 
-`ProviderConfig`：`baseUrl`、`model`、`timeoutMs`、`temperature`、`maxTokens`。API key 写入 Windows 凭据管理器，service `com.vesrio.app`，account `provider-default`。
+`ProviderConfig`：`baseUrl`、`model`、`timeoutMs`、`temperature`、`maxTokens`。默认预设为 DeepSeek（`https://api.deepseek.com` / `deepseek-chat`）。API key 写入 Windows 凭据管理器，service `com.vesrio.app`，account `provider-default`。
 
 ### 3.3 行内建议
 
@@ -254,7 +254,7 @@ CSP：`default-src 'self'`，脚本仅允许同源，图片允许 `asset:` / `da
 
 E2E 使用 `VITE_MOCK_BACKEND=true` + 本机 Chrome，仅验证 UI 与交互时序；Rust 后端由 `cargo test` 验证。Mock 不会进入生产构建。
 
-`pnpm test:desktop` 使用 `src-tauri/tauri.e2e.conf.json` 构建隔离标识（`com.vesrio.app.e2e`）的 debug 应用，通过 WebView2 CDP 驱动真实 Rust 文件服务，并在结束时清理测试数据目录。它不会替代干净主机安装/卸载验证。
+`pnpm test:desktop` 使用 `src-tauri/tauri.e2e.conf.json` 构建隔离标识（`com.vesrio.app.e2e`）的 debug 应用，通过 WebView2 CDP 驱动真实 Rust 文件服务，并在结束时清理测试数据目录；debug 构建可通过 `VESRIO_SECRET_SERVICE` 使用一次性凭据条目，避免触碰真实 API Key。它不会替代干净主机安装/卸载验证。
 
 ## 9. 版本与发布
 
