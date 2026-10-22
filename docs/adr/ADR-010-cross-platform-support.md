@@ -1,6 +1,6 @@
 # ADR-010：V0.2 跨平台支持与平台边界
 
-- 状态：Proposed（待负责人批准）
+- 状态：Accepted（2026-10-22 负责人确认）
 - 日期：2026-10-22
 - 关联：VES-055～VES-071、[V0.2 跨平台里程碑计划](../v0.2-cross-platform-plan.md)
 - 补充：[ADR-008](./ADR-008-atomic-save-and-secrets.md)（Windows 原子保存与凭据）
@@ -29,6 +29,17 @@ V0.1 明确以 Windows 11 x64 首发，现有实现也围绕 Windows 验证：�
 5. **平台 UI 适配**：快捷键文案按平台显示 `⌘` / `Ctrl`；macOS 使用系统菜单与窗口装饰约定，避免原生标题栏与自绘标题栏叠加；字体栈补齐 Linux CJK 回退。平台差异集中在适配层，不复制业务逻辑。
 6. **验证策略**：三平台 CI 至少覆盖 typecheck/lint/test/build、Rust 检查、黄金样本与许可证；桌面 E2E 按平台能力选择方案（Windows WebView2 CDP、Linux WebDriver、macOS 脚本化人工验收或后续替代方案）。未在目标系统实机执行的项只能标记 `Not Verified`。
 7. **范围边界**：V0.2 只做平台化，不新增写作功能。PRD 5.5 原有的 V0.2 SHOULD 功能顺延为 V0.3 候选，需随本 ADR 一并确认。V0.1 的 Windows 行为与验收标准不变。
+
+## 确认记录
+
+2026-10-22 负责人确认以下默认值：
+
+1. macOS 13+，universal2。
+2. Linux 一级支持 Ubuntu 22.04/24.04 LTS x64，发行物为 deb + AppImage。
+3. macOS 桌面 E2E 在 V0.2 采用脚本化人工验收，自动化列为技术债。
+4. 凭据后端不可用时明确报错并禁用 AI，不降级到明文或内存 mock。
+5. 原 PRD 5.5 的 V0.2 SHOULD 功能顺延 V0.3。
+6. Windows 代码签名作为共享发布门禁；证书具备则签，否则在已知问题中披露。
 
 ## 后果
 
@@ -62,4 +73,4 @@ V0.1 明确以 Windows 11 x64 首发，现有实现也围绕 Windows 验证：�
 - 计划文档：`docs/v0.2-cross-platform-plan.md`。
 - 任务与门禁：`docs/wbs.md` E7 与 V0.2 里程碑。
 - 实现后需补充：三平台凭据“保存→重启→读取”记录、Unix 权限保持测试、黄金样本回环、签名/公证结果、安装/卸载记录。
-- 本文档批准前，状态保持 `Proposed`；批准后改为 `Accepted` 并记录批准日期与负责人。
+- 本文档已于 2026-10-22 获批，状态为 `Accepted`；后续变更需新增 ADR 或在本文件追加修订记录。

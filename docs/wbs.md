@@ -250,7 +250,7 @@ pnpm tauri build                              PASS  NSIS Vesrio_0.1.0_x64-setup.
 
 ## 9. V0.2 跨平台里程碑（独立）
 
-> 详细方案：[v0.2-cross-platform-plan.md](./v0.2-cross-platform-plan.md)；架构决策：[ADR-010](./adr/ADR-010-cross-platform-support.md)（Proposed）。
+> 详细方案：[v0.2-cross-platform-plan.md](./v0.2-cross-platform-plan.md)；架构决策：[ADR-010](./adr/ADR-010-cross-platform-support.md)（Accepted）。
 
 ### 9.1 范围与启动条件
 
@@ -297,8 +297,9 @@ pnpm tauri build                              PASS  NSIS Vesrio_0.1.0_x64-setup.
 
 | 任务 | 状态 | 说明 |
 | --- | --- | --- |
-| VES-055 | In Progress | 计划与 ADR-010 已起草，待负责人批准 |
-| VES-056～VES-071 | Todo | 依赖见 §9.4；批准后启动 |
+| VES-055 | Done | 计划与 ADR-010 已于 2026-10-22 获负责人确认 |
+| VES-056 | In Review | 适配层与审计完成；Windows 检查通过，macOS/Linux 编译待 VES-066 |
+| VES-057～VES-071 | Todo | 依赖见 §9.4 |
 
 ### 9.6 V0.2 额外强制约束
 

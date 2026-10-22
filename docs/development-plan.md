@@ -177,7 +177,7 @@ CodeMirror 的 `from/to` 属于 JavaScript UTF-16 偏移；Rust 处理 UTF-8 字
 
 ### 7.1 V0.2 跨平台里程碑（独立）
 
-V0.2 不扩展写作功能，只完成 Windows / macOS / Linux 平台化。任务、矩阵与门禁见 [v0.2-cross-platform-plan.md](./v0.2-cross-platform-plan.md)，架构决策见 [ADR-010](./adr/ADR-010-cross-platform-support.md)（Proposed）。V0.1 的范围、工期与验收保持不变。
+V0.2 不扩展写作功能，只完成 Windows / macOS / Linux 平台化。任务、矩阵与门禁见 [v0.2-cross-platform-plan.md](./v0.2-cross-platform-plan.md)，架构决策见 [ADR-010](./adr/ADR-010-cross-platform-support.md)（Accepted）。V0.1 的范围、工期与验收保持不变。
 
 | 阶段 | 参考周期 | 核心工作 | 退出条件 |
 | --- | --- | --- | --- |
