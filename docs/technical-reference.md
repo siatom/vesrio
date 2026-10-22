@@ -238,9 +238,14 @@ Tauri commands（src-tauri/src/commands.rs）
 | 越界写入 | `writeScope` 固定；Apply 校验 revision 与选区 hash |
 | 过期补丁 | `stale` 状态 + 服务端拒绝 |
 | 文件损坏 | 原子替换、失败回退、快照、冲突检测 |
-| 前端越权 | Tauri capabilities 仅开放 `core:default` 与 `dialog:default` |
+| 前端越权 | Tauri capabilities 仅开放 `core:default`、`dialog:default` 与 `opener:default`（只允许 http/https/mailto/tel） |
+| 外链执行 | Markdown 链接只跟随 http/https/mailto/tel 与本地 Markdown 文档；`javascript:` 等协议被拒绝，本地附件不直接启动 |
+| 远程图片 | 默认不自动请求；用户点击占位条后才加载，`img` 使用 `no-referrer` |
+| 资源读取 | 本地图片通过 Tauri asset protocol 提供，scope 覆盖用户打开的任意目录；仅用于 `<img>` 展示，不暴露文件内容给脚本 |
 
-CSP：`default-src 'self'`，脚本仅允许同源，图片允许 `asset:` / `data:`，样式允许内联（CodeMirror 需要），连接仅允许 IPC。
+CSP：`default-src 'self'`，脚本仅允许同源，图片允许 `asset:` / `data:` 与用户确认后的 `https:` / `http:`，样式允许内联（CodeMirror 需要），连接仅允许 IPC。
+
+数学公式由 KaTeX 在 WebView 内离线渲染，关闭 `trust` 且不执行公式中的 HTML；Markdown 源文保持不变。
 
 ## 8. 测试分层
 
