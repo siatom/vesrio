@@ -95,16 +95,6 @@ async function closeTab(id: string) {
         <PanelLeftClose v-if="settings.sidebarOpen" :size="16" />
         <PanelLeftOpen v-else :size="16" />
       </button>
-      <button
-        class="icon-button"
-        :aria-pressed="settings.inspectorOpen"
-        :aria-label="settings.inspectorOpen ? '收起右侧栏' : '展开右侧栏'"
-        :title="settings.inspectorOpen ? '收起右侧栏 (Ctrl+Alt+B)' : '展开右侧栏 (Ctrl+Alt+B)'"
-        @click="settings.update({ inspectorOpen: !settings.inspectorOpen })"
-      >
-        <PanelRightClose v-if="settings.inspectorOpen" :size="16" />
-        <PanelRightOpen v-else :size="16" />
-      </button>
     </div>
 
     <div class="titlebar__tabs" role="tablist" aria-label="打开的文档">
@@ -190,6 +180,18 @@ async function closeTab(id: string) {
       <button class="icon-button" aria-label="设置" title="设置 (Ctrl+,)" @click="ui.settingsOpen = true">
         <Settings :size="16" />
       </button>
+      <div v-if="!settings.focusMode" class="titlebar__view titlebar__view--end">
+        <button
+          class="icon-button"
+          :aria-pressed="settings.inspectorOpen"
+          :aria-label="settings.inspectorOpen ? '收起右侧栏' : '展开右侧栏'"
+          :title="settings.inspectorOpen ? '收起右侧栏 (Ctrl+Alt+B)' : '展开右侧栏 (Ctrl+Alt+B)'"
+          @click="settings.update({ inspectorOpen: !settings.inspectorOpen })"
+        >
+          <PanelRightClose v-if="settings.inspectorOpen" :size="16" />
+          <PanelRightOpen v-else :size="16" />
+        </button>
+      </div>
     </div>
   </header>
 </template>
