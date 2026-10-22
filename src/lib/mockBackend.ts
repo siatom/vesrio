@@ -231,6 +231,8 @@ export async function mockInvoke<T>(command: string, args: Record<string, unknow
         confirmBeforeSend: true,
         autoSnapshot: true,
         typewriterMode: false,
+        sidebarWidth: 258,
+        inspectorWidth: 348,
         sidebarOpen: true,
         outlineOpen: true,
         inspectorOpen: true,

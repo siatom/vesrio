@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { onAiEvent } from '@/lib/api'
 import { friendlyMessage } from '@/lib/errors'
-import type { AppErrorPayload, SuggestionView } from '@/lib/types'
+import { DEFAULT_SETTINGS, type AppErrorPayload, type SuggestionView } from '@/lib/types'
 import TitleBar from '@/components/TitleBar.vue'
 import Sidebar from '@/components/Sidebar.vue'
+import ResizeHandle from '@/components/ResizeHandle.vue'
 import StatusBar from '@/components/StatusBar.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import ToastHost from '@/components/ToastHost.vue'
@@ -35,6 +36,73 @@ const ui = useUiStore()
 
 const unlisteners: Array<() => void> = []
 let pollTimer: number | undefined
+
+const SIDEBAR_MIN = 200
+const SIDEBAR_MAX = 480
+const INSPECTOR_MIN = 260
+const INSPECTOR_MAX = 640
+const EDITOR_MIN = 360
+
+const windowWidth = ref(typeof window === 'undefined' ? 1280 : window.innerWidth)
+const sidebarVisible = computed(() => settings.sidebarOpen && !settings.focusMode)
+const inspectorVisible = computed(() => settings.inspectorOpen && !settings.focusMode)
+
+const sidebarLimit = computed(() => {
+  const reserved = inspectorVisible.value ? Math.min(settings.inspectorWidth, INSPECTOR_MAX) : 0
+  return Math.max(
+    SIDEBAR_MIN,
+    Math.min(SIDEBAR_MAX, windowWidth.value - reserved - EDITOR_MIN),
+  )
+})
+
+const inspectorLimit = computed(() => {
+  const reserved = sidebarVisible.value ? Math.min(settings.sidebarWidth, SIDEBAR_MAX) : 0
+  return Math.max(
+    INSPECTOR_MIN,
+    Math.min(INSPECTOR_MAX, windowWidth.value - reserved - EDITOR_MIN),
+  )
+})
+
+const sidebarWidth = computed(() =>
+  Math.round(Math.min(sidebarLimit.value, Math.max(SIDEBAR_MIN, settings.sidebarWidth))),
+)
+
+const inspectorWidth = computed(() =>
+  Math.round(Math.min(inspectorLimit.value, Math.max(INSPECTOR_MIN, settings.inspectorWidth))),
+)
+
+const shellStyle = computed(() => ({
+  '--sidebar-width': `${sidebarWidth.value}px`,
+  '--inspector-width': `${inspectorWidth.value}px`,
+}))
+
+function previewSidebarWidth(width: number) {
+  settings.$patch({ sidebarWidth: width })
+}
+
+function commitSidebarWidth(width: number) {
+  void settings.update({ sidebarWidth: width })
+}
+
+function resetSidebarWidth() {
+  void settings.update({ sidebarWidth: DEFAULT_SETTINGS.sidebarWidth })
+}
+
+function previewInspectorWidth(width: number) {
+  settings.$patch({ inspectorWidth: width })
+}
+
+function commitInspectorWidth(width: number) {
+  void settings.update({ inspectorWidth: width })
+}
+
+function resetInspectorWidth() {
+  void settings.update({ inspectorWidth: DEFAULT_SETTINGS.inspectorWidth })
+}
+
+function onWindowResize() {
+  windowWidth.value = window.innerWidth
+}
 
 async function bootstrap() {
   await settings.load()
@@ -90,6 +158,7 @@ onMounted(async () => {
   window.addEventListener('focus', onFocus)
   window.addEventListener('keydown', onKeydown, { capture: true })
   window.addEventListener('beforeunload', onBeforeUnload)
+  window.addEventListener('resize', onWindowResize)
 })
 
 onBeforeUnmount(() => {
@@ -98,6 +167,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('focus', onFocus)
   window.removeEventListener('keydown', onKeydown, { capture: true })
   window.removeEventListener('beforeunload', onBeforeUnload)
+  window.removeEventListener('resize', onWindowResize)
 })
 
 async function pollExternal() {
@@ -337,18 +407,41 @@ function onKeydown(event: KeyboardEvent) {
     :class="{
       'is-focus': settings.focusMode,
       'is-review': settings.reviewMode,
-      'no-sidebar': !settings.sidebarOpen || settings.focusMode,
-      'no-inspector': !settings.inspectorOpen || settings.focusMode,
+      'no-sidebar': !sidebarVisible,
+      'no-inspector': !inspectorVisible,
     }"
+    :style="shellStyle"
   >
     <TitleBar />
     <div class="app-body">
-      <Sidebar v-if="settings.sidebarOpen && !settings.focusMode" />
+      <Sidebar v-if="sidebarVisible" />
+      <ResizeHandle
+        v-if="sidebarVisible"
+        side="left"
+        label="调整左侧栏宽度"
+        :width="sidebarWidth"
+        :min="SIDEBAR_MIN"
+        :max="sidebarLimit"
+        @resize="previewSidebarWidth"
+        @commit="commitSidebarWidth"
+        @reset="resetSidebarWidth"
+      />
       <div class="app-main">
         <EditorPane v-if="workspace.activeTab" />
         <EmptyState v-else />
       </div>
-      <InspectorPanel v-if="settings.inspectorOpen && !settings.focusMode" />
+      <ResizeHandle
+        v-if="inspectorVisible"
+        side="right"
+        label="调整右侧栏宽度"
+        :width="inspectorWidth"
+        :min="INSPECTOR_MIN"
+        :max="inspectorLimit"
+        @resize="previewInspectorWidth"
+        @commit="commitInspectorWidth"
+        @reset="resetInspectorWidth"
+      />
+      <InspectorPanel v-if="inspectorVisible" />
     </div>
     <StatusBar />
 

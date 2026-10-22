@@ -253,6 +253,8 @@ export interface AppSettings {
   confirmBeforeSend: boolean
   autoSnapshot: boolean
   typewriterMode: boolean
+  sidebarWidth: number
+  inspectorWidth: number
   sidebarOpen: boolean
   outlineOpen: boolean
   inspectorOpen: boolean
@@ -272,6 +274,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   confirmBeforeSend: true,
   autoSnapshot: true,
   typewriterMode: false,
+  sidebarWidth: 258,
+  inspectorWidth: 348,
   sidebarOpen: true,
   outlineOpen: true,
   inspectorOpen: true,

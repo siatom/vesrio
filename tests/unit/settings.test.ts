@@ -45,6 +45,15 @@ describe('settings store', () => {
     expect(style.getPropertyValue('--editor-measure')).toBe('760px')
   })
 
+  it('restores persisted panel widths within range', async () => {
+    const { api } = await import('@/lib/api')
+    vi.mocked(api.getSettings).mockResolvedValue({ sidebarWidth: 320, inspectorWidth: 999 })
+    const settings = useSettingsStore()
+    await settings.load()
+    expect(settings.sidebarWidth).toBe(320)
+    expect(settings.inspectorWidth).toBe(348)
+  })
+
   it('clamps persisted values through the whitelist', async () => {
     const { api } = await import('@/lib/api')
     vi.mocked(api.getSettings).mockResolvedValue({
