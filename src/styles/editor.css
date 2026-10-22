@@ -65,6 +65,99 @@
   background-repeat: no-repeat;
 }
 
+.editor-host .cm-md-link {
+  cursor: pointer;
+}
+
+.editor-host .cm-md-image {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: top;
+  margin: 6px 0;
+}
+
+.editor-host .cm-md-image__img {
+  display: block;
+  max-width: 100%;
+  max-height: 72vh;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  object-fit: contain;
+}
+
+.editor-host .cm-md-image__chip {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.editor-host .cm-md-image__chip:focus-visible {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 2px;
+}
+
+.editor-host .cm-md-image__chip-title {
+  font-weight: 600;
+}
+
+.editor-host .cm-md-image__chip-path {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.editor-host .cm-md-image__fallback {
+  display: inline-block;
+  padding: 6px 10px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-faint);
+  font-family: var(--font-ui);
+  font-size: 12px;
+}
+
+.editor-host .cm-md-math--inline {
+  padding: 0 2px;
+}
+
+.editor-host .cm-md-math--block {
+  display: block;
+  max-width: 100%;
+  margin: 10px 0;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  background: var(--code-bg);
+  overflow-x: auto;
+  text-align: center;
+}
+
+.editor-host .cm-md-math--block .katex-display {
+  margin: 0;
+}
+
+.editor-host .cm-md-math--error {
+  color: var(--danger);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.editor-host .cm-md-math .katex {
+  font-size: 1.04em;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

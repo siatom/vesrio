@@ -24,9 +24,11 @@ import {
 import { useSettingsStore } from '@/stores/settings'
 import { useWorkspaceStore } from '@/stores/workspace'
 import { editorHighlighting, editorTheme } from './editorTheme'
-import { markdownLivePreview } from './markdownLivePreview'
+import { blockMathExtension } from './markdownBlockMath'
+import { documentPathFacet, markdownLivePreview } from './markdownLivePreview'
 
 export const sourceModeCompartment = new Compartment()
+export const documentPathCompartment = new Compartment()
 
 function baseExtensions(): Extension[] {
   return [
@@ -42,19 +44,21 @@ function baseExtensions(): Extension[] {
     highlightSelectionMatches(),
     keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap, indentWithTab]),
     markdown({ base: markdownLanguage }),
+    // Long prose (and long link labels) wraps by default instead of scrolling.
+    EditorView.lineWrapping,
     editorTheme,
     editorHighlighting,
   ]
 }
 
 export function sourceModeExtension(enabled: boolean): Extension {
-  return enabled ? [] : markdownLivePreview
+  return enabled ? [] : [markdownLivePreview, blockMathExtension]
 }
 
 export function createEditorState(
   documentId: string,
   text: string,
-  options: { sourceMode: boolean },
+  options: { sourceMode: boolean; documentPath: string },
 ): EditorState {
   const workspace = useWorkspaceStore()
   const settings = useSettingsStore()
@@ -88,6 +92,7 @@ export function createEditorState(
       ...baseExtensions(),
       highlightActiveLine(),
       sourceModeCompartment.of(sourceModeExtension(options.sourceMode)),
+      documentPathCompartment.of(documentPathFacet.of(options.documentPath)),
       EditorView.updateListener.of(listener),
     ],
   })
@@ -96,6 +101,12 @@ export function createEditorState(
 export function applySourceMode(view: EditorView, enabled: boolean) {
   view.dispatch({
     effects: sourceModeCompartment.reconfigure(sourceModeExtension(enabled)),
+  })
+}
+
+export function applyDocumentPath(view: EditorView, documentPath: string) {
+  view.dispatch({
+    effects: documentPathCompartment.reconfigure(documentPathFacet.of(documentPath)),
   })
 }
 

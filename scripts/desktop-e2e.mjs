@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* global document, window */
+/* global document, window, HTMLImageElement */
 /**
  * Desktop E2E smoke test against the real Tauri/WebView2 application.
  *
@@ -304,6 +304,38 @@ async function main() {
     checks += 1
     await page.keyboard.press('Escape')
     await settingsDialog.waitFor({ state: 'hidden' })
+    checks += 1
+
+    // Live preview images and math must work in the real WebView. The image is
+    // loaded through the Tauri asset protocol, not a browser blob/object URL.
+    writeFileSync(
+      join(docsDir, 'pixel.png'),
+      Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z1ZkAAAAASUVORK5CYII=',
+        'base64',
+      ),
+    )
+    await page.locator('.cm-content').click()
+    await page.keyboard.press('Control+End')
+    await page.keyboard.press('Enter')
+    await page.keyboard.insertText('![pixel](pixel.png)')
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await page.keyboard.insertText('$$ E=mc^2 $$')
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await page.keyboard.insertText('末尾')
+    await page.keyboard.press('ArrowUp')
+    await page.waitForFunction(() => {
+      const image = document.querySelector('.cm-md-image__img')
+      const math = document.querySelector('.cm-md-math--block')
+      return (
+        image instanceof HTMLImageElement &&
+        image.complete &&
+        image.naturalWidth > 0 &&
+        math !== null
+      )
+    })
     checks += 1
 
     await page.screenshot({ path: screenshotPath, fullPage: false })

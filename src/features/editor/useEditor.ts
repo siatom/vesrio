@@ -5,6 +5,7 @@ import { useWorkspaceStore } from '@/stores/workspace'
 import type { EditorHandle } from './editorRegistry'
 import { registerEditor } from './editorRegistry'
 import {
+  applyDocumentPath,
   applySourceMode,
   createEditorState,
   redoCommand,
@@ -14,6 +15,7 @@ import {
 interface Session {
   epoch: number
   sourceMode: boolean
+  documentPath: string
   state: EditorState
   scrollTop: number
 }
@@ -121,10 +123,12 @@ export function useEditor(container: Ref<HTMLElement | null>) {
     if (existing && scroller()) existing.scrollTop = scroller()?.scrollTop ?? existing.scrollTop
     const state = createEditorState(documentId, tab.editorText, {
       sourceMode: tab.sourceMode,
+      documentPath: tab.document.path,
     })
     sessions.set(documentId, {
       epoch: tab.docEpoch,
       sourceMode: tab.sourceMode,
+      documentPath: tab.document.path,
       state,
       scrollTop: 0,
     })
@@ -160,6 +164,10 @@ export function useEditor(container: Ref<HTMLElement | null>) {
       applySourceMode(current, tab.sourceMode)
       session.sourceMode = tab.sourceMode
     }
+    if (session.documentPath !== tab.document.path) {
+      applyDocumentPath(current, tab.document.path)
+      session.documentPath = tab.document.path
+    }
     bindHandle(id)
     const range = current.state.selection.main
     workspace.updateSelection(id, {
@@ -183,7 +191,12 @@ export function useEditor(container: Ref<HTMLElement | null>) {
   })
 
   watch(
-    () => [workspace.activeId, workspace.activeTab?.docEpoch, workspace.activeTab?.sourceMode],
+    () => [
+      workspace.activeId,
+      workspace.activeTab?.docEpoch,
+      workspace.activeTab?.sourceMode,
+      workspace.activeTab?.document.path,
+    ],
     () => sync(),
     { flush: 'post' },
   )

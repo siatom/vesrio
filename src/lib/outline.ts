@@ -52,6 +52,39 @@ function stripInline(text: string): string {
     .trim()
 }
 
+/**
+ * GitHub-style heading slug used by `#anchor` links in Markdown documents.
+ * Kept intentionally small: lowercase, strip formatting and punctuation, then
+ * collapse whitespace to hyphens.
+ */
+export function headingSlug(text: string): string {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/[`*_~]/g, '')
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
+    .replace(/\s+/g, '-')
+}
+
+/** Find the document offset for a `#heading` link, or null when it is absent. */
+export function findHeadingOffset(text: string, anchor: string): number | null {
+  let wanted = anchor.replace(/^#/, '').trim().toLowerCase()
+  try {
+    wanted = decodeURIComponent(wanted)
+  } catch {
+    // Keep the raw anchor when it is not valid percent-encoding.
+  }
+  if (!wanted) return null
+
+  const headings = parseOutline(text)
+  const exact = headings.find((heading) => heading.text.trim().toLowerCase() === wanted)
+  if (exact) return exact.from
+  const slugged = headings.find((heading) => headingSlug(heading.text) === wanted)
+  return slugged ? slugged.from : null
+}
+
 export function activeHeadingIndex(headings: OutlineHeading[], cursorLine: number): number {
   let active = -1
   for (let index = 0; index < headings.length; index += 1) {
