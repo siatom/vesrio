@@ -41,6 +41,7 @@ node scripts/checksums.mjs
 | 安装包构建 | `pnpm tauri build` | PASS | NSIS 2.96 MiB |
 | 启动冒烟（未安装） | 直接运行 `src-tauri/target/release/vesrio.exe` 8 秒 | PASS | 进程存活；创建 `%APPDATA%\com.vesrio.app\{vesrio.db,snapshots,logs}` |
 | 桌面 E2E（真实 Tauri） | `pnpm test:desktop` | PASS | 20 checks：打开/编辑/撤销/保存、CRLF 字节比对、外部冲突、快照恢复、风格卡、AI 未配置失败安全、主题/专注/设置 |
+| 真实模型（DeepSeek） | 设置页「测试连接」+ 临时示例文档行内请求 | PASS | `/models` 返回 2 个模型；`deepseek-flash` / max_tokens 384000 返回有效建议；接受前正文不变 |
 | NSIS 安装/启动/卸载（临时目录） | `Vesrio_0.1.0_x64-setup.exe /S /D=%TEMP%\vesrio-install-test` | PASS | 安装退出 0；安装后进程存活；卸载退出 0；安装目录移除；用户 `.md` 存在且 SHA-256 不变 |
 | 生产包不含 mock | `rg "mockInvoke|VITE_MOCK_BACKEND" dist/assets` | PASS | 无匹配 |
 
@@ -116,7 +117,7 @@ certutil -hashfile Vesrio_0.1.0_x64-setup.exe SHA256
 | 自动化门禁全绿 | ✅ |
 | 安装/升级/卸载干净主机验证 | ⬜ 未执行 |
 | Windows 11 桌面六条旅程 | ⬜ 未执行 |
-| 真实模型服务联调 | ⬜ 未执行 |
+| 真实模型服务联调 | ✅ 连接与行内建议通过（临时示例文档）；安装后完整旅程未执行 |
 | ≥ 3 个真实长文档内测 | ⬜ 未执行 |
 | P0 缺陷清零 | ⬜ 待内测确认 |
 | 安装包签名 | ⬜ 未执行 |
