@@ -1,5 +1,5 @@
-3e1beeda877e8360c766d15fb93ce499ead4d218359f7c8e187f1f8d76355419  src-tauri/target/release/vesrio.exe
-e1896706c4f6b948d5c7f1138e4e3727c582c48e32786d1ca0555154f191bfeb  src-tauri/target/release/bundle/nsis/Vesrio_0.1.0_x64-setup.exe
+3224c61d7375b19c24e7acb79a4b8712f36f53297654c6dba3c4fd8dc5701c5b  src-tauri/target/release/vesrio.exe
+e1687424aa2ad8342375fb49060ca5c137660b7fbeb2072bdb3c39d58a747d47  src-tauri/target/release/bundle/nsis/Vesrio_0.1.0_x64-setup.exe
 134ffa47822dc1c11b993e6eb2d35e57055625f8bf72f6dcdf31fda37d7d59f9  pnpm-lock.yaml
 9e4ae2f0549e56060cfb0fdea2862472c12d7faeac39cf8d1ccc49e569c68f73  src-tauri/Cargo.lock
 03b0bb2e4b48d82e5d0619ec004bfea435dd08f9ed5f3d8320ce11d494c02d3b  package.json
