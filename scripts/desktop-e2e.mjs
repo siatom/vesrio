@@ -338,6 +338,16 @@ async function main() {
     })
     checks += 1
 
+    await page.keyboard.press('Control+End')
+    await page.keyboard.press('Enter')
+    await page.keyboard.insertText('```mermaid\ngraph TD\n  A[Start] --> B[End]\n```')
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+    await page.keyboard.insertText('末尾 2')
+    await page.keyboard.press('ArrowUp')
+    await page.waitForFunction(() => document.querySelector('.cm-md-mermaid svg') !== null)
+    checks += 1
+
     await page.screenshot({ path: screenshotPath, fullPage: false })
     console.log(`desktop e2e: PASS (${checks} checks)`)
     console.log(`- app data: ${appData}`)

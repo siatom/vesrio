@@ -158,6 +158,77 @@
   font-size: 1.04em;
 }
 
+.editor-host .cm-md-mermaid {
+  position: relative;
+  display: block;
+  max-width: 100%;
+  margin: 14px 0;
+  padding: 18px 16px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+  text-align: center;
+  cursor: pointer;
+}
+
+.editor-host .cm-md-mermaid::after {
+  content: 'Mermaid';
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--panel);
+  color: var(--text-faint);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.editor-host .cm-md-mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.editor-host .cm-md-mermaid__loading {
+  padding: 28px 0;
+  color: var(--text-faint);
+  font-family: var(--font-ui);
+  font-size: 12px;
+}
+
+.editor-host .cm-md-mermaid--error {
+  text-align: left;
+}
+
+.editor-host .cm-md-mermaid__error-title {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.editor-host .cm-md-mermaid__error-detail {
+  display: block;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  white-space: pre-wrap;
+}
+
+.editor-host .cm-md-mermaid__error-hint {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-faint);
+  font-family: var(--font-ui);
+  font-size: 11px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

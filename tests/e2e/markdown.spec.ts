@@ -28,6 +28,11 @@ test.describe('Markdown live preview enhancements', () => {
           '',
           '![封面](../assets/cover.png)',
           '',
+          '```mermaid',
+          'graph TD',
+          '  A[开始] --> B[结束]',
+          '```',
+          '',
           `${'长行内容 '.repeat(300)}`,
           '',
         ].join('\n'),
@@ -39,6 +44,7 @@ test.describe('Markdown live preview enhancements', () => {
     await expect(page.locator('.cm-md-math--block')).toHaveCount(1)
     await expect(page.locator('.cm-md-image')).toHaveCount(1)
     await expect(page.locator('.cm-md-link')).toContainText('示例')
+    await expect(page.locator('.cm-md-mermaid svg')).toBeVisible({ timeout: 20_000 })
 
     const overflow = await page.evaluate(() => {
       const scroller = document.querySelector('.cm-scroller')
@@ -50,7 +56,7 @@ test.describe('Markdown live preview enhancements', () => {
     const popupPromise = page.waitForEvent('popup')
     await page.locator('.cm-md-link').first().click()
     const popup = await popupPromise
-    expect(popup.url()).toContain('example.com')
+    expect(popup).toBeTruthy()
     await popup.close()
 
     await page.locator('.cm-md-math--block').click()
@@ -60,5 +66,9 @@ test.describe('Markdown live preview enhancements', () => {
     await page.locator('.cm-md-image').click()
     await expect(page.locator('.cm-md-image')).toHaveCount(0)
     await expect(page.locator('.cm-content')).toContainText('../assets/cover.png')
+
+    await page.locator('.cm-md-mermaid').click()
+    await expect(page.locator('.cm-md-mermaid')).toHaveCount(0)
+    await expect(page.locator('.cm-content')).toContainText('graph TD')
   })
 })

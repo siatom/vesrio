@@ -38,6 +38,10 @@ const ALLOWED = new Set([
   'Zlib',
 ])
 
+// Packages whose package.json omits the license field while the shipped
+// license file is permissive. Keep this list tiny and verify the file.
+const LICENSE_OVERRIDES = new Map([['khroma', 'MIT']])
+
 function normalizeExpression(expression) {
   return expression
     .replace(/[()]/g, ' ')
@@ -86,7 +90,7 @@ function readNodeLicenses() {
         ecosystem: 'node',
         name: pkg.name,
         version: (pkg.versions ?? []).join(', '),
-        license,
+        license: LICENSE_OVERRIDES.get(pkg.name) ?? license,
       })
     }
   }

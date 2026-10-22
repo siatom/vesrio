@@ -6,7 +6,7 @@ import { WidgetType, type EditorView } from '@codemirror/view'
  * single source of truth and is revealed again as soon as its line is active.
  */
 
-function revealSource(widget: HTMLElement, view: EditorView, event: Event): void {
+export function revealSource(widget: HTMLElement, view: EditorView, event: Event): void {
   if (event instanceof MouseEvent && event.button !== 0) return
   event.preventDefault()
   event.stopPropagation()

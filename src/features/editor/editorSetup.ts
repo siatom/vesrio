@@ -26,6 +26,7 @@ import { useWorkspaceStore } from '@/stores/workspace'
 import { editorHighlighting, editorTheme } from './editorTheme'
 import { blockMathExtension } from './markdownBlockMath'
 import { documentPathFacet, markdownLivePreview } from './markdownLivePreview'
+import { mermaidExtension } from './markdownMermaid'
 
 export const sourceModeCompartment = new Compartment()
 export const documentPathCompartment = new Compartment()
@@ -52,7 +53,7 @@ function baseExtensions(): Extension[] {
 }
 
 export function sourceModeExtension(enabled: boolean): Extension {
-  return enabled ? [] : [markdownLivePreview, blockMathExtension]
+  return enabled ? [] : [markdownLivePreview, blockMathExtension, mermaidExtension]
 }
 
 export function createEditorState(
