@@ -163,14 +163,53 @@
 
 ## 7. 首版验收结论模板
 
-| 验收项                      | 结果   | 证据           |
-| --------------------------- | ------ | -------------- |
-| Markdown 本地编辑与往返保真 | 待验证 | 黄金样本报告   |
-| 行内 AI 建议和 Diff         | 待验证 | E2E 视频/日志  |
-| 接受、拒绝、撤销、快照恢复  | 待验证 | E2E 与故障注入 |
-| 过期补丁阻断                | 待验证 | 并发修改测试   |
-| 风格卡和 Agent 对话         | 待验证 | 集成测试       |
-| API key 与外发数据保护      | 待验证 | 安全检查       |
-| Windows 安装、升级、卸载    | 待验证 | 实机报告       |
+| 验收项                      | 结果     | 证据                                                             |
+| --------------------------- | -------- | ---------------------------------------------------------------- |
+| Markdown 本地编辑与往返保真 | 通过     | 24 个黄金样本 `scripts/check-golden.mjs` + `cargo test`           |
+| 行内 AI 建议和 Diff         | 通过     | `tests/e2e/editor-ai.spec.ts`（接受/拒绝/多候选/Diff）            |
+| 接受、拒绝、撤销、快照恢复  | 通过     | E2E + `suggestion/service.rs` + 快照重启测试                     |
+| 过期补丁阻断                | 通过     | Rust revision/hash 测试 + E2E「生成后编辑」                       |
+| 风格卡和 Agent 对话         | 通过     | 风格优先级单测、风格卡 E2E、Agent 引用 E2E                        |
+| API key 与外发数据保护      | 通过     | 凭据管理器实现、脱敏单测、`docs/security-audit.md`                |
+| Windows 安装、升级、卸载    | 待实机   | NSIS 已构建；干净主机安装/升级/卸载尚未执行（VES-050）            |
 
-**所有结果初始为待验证，不得在尚未开发时视为完成。**
+自动化门禁已通过；上表「待实机」项未完成前，不得声明正式发布。
+
+## 8. 当前交付状态（2026-10-22）
+
+| 任务范围 | 状态 | 说明 |
+| --- | --- | --- |
+| VES-001～007（E0） | Done | 仓库/门禁、ADR-001～009、24 个黄金样本、布局、错误合同、快捷键 |
+| VES-008～018（E1） | Done | 文件打开/原子保存/保真、编辑器、预览、大纲、文件树、冲突、快照、黄金回环 |
+| VES-019～024（E2） | Done | SQLite 迁移/备份、keyring、Provider/SSE/取消、双端合同、Prompt 校验 |
+| VES-025～034（E3） | Done | 选区、范围、状态机、Diff、受限 Apply、过期阻断、多候选、取消保护、E2E |
+| VES-035～042（E4） | Done | Agent 只读对话/持久化/引用、风格卡版本化与优先级、隐私预览、注入回归、E2E |
+| VES-043～046（E5） | Done | 键盘/焦点、主题与排版、设置页、专注/审阅模式走查 |
+| VES-047 | Done | 10 MB 打开 714 ms / 无编辑保存 701 ms；5 万字插入 27.8 ms、40 次跳转 38.7 ms |
+| VES-048 | In Review | 写失败、外部冲突、断网/Provider 500、取消、快照损坏已有测试；进程崩溃演练待实机 |
+| VES-049 | Needs Review | Chrome + mock E2E 通过；release 二进制启动冒烟通过（8 秒存活、数据目录创建）；安装后六条桌面旅程仍未执行 |
+| VES-050 | Needs Review | NSIS 构建成功；干净主机安装/升级/卸载未验证，安装包未签名 |
+| VES-051 | Done | `README.md`、`docs/user-guide.md`、已知问题、恢复说明 |
+| VES-052 | Done | 安全审计与许可证报告完成（794 包，0 违规）；签名仍为发布前事项 |
+| VES-053 | In Review | 检查单、校验和、回滚说明已就绪；人工门禁未完成，结论保持 No-Go |
+| VES-054 | Blocked | 需至少 3 个真实长文档内测反馈；当前无可用的真实用户记录 |
+
+### 8.1 自动化证据
+
+```text
+pnpm typecheck / lint / build                 PASS
+pnpm test                                     PASS  7 files / 33 tests
+pnpm exec playwright test                     PASS  16 tests
+node scripts/check-golden.mjs                 PASS  24 samples
+cargo fmt --check / clippy -D warnings        PASS
+cargo test                                    PASS  64 lib + 3 golden + 3 performance
+node scripts/check-licenses.mjs               PASS  794 packages / 0 violations
+pnpm tauri build                              PASS  NSIS Vesrio_0.1.0_x64-setup.exe
+```
+
+### 8.2 发布判断
+
+- 代码与自动化验收：**通过**。
+- 正式发布：**No-Go**。阻塞项为 VES-049、VES-050、VES-053 人工门禁与 VES-054 真实用户内测。
+- 详细步骤与回滚见 [release-checklist.md](./release-checklist.md)。
+
