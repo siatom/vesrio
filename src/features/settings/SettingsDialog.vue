@@ -58,8 +58,22 @@ const tabs: { id: Tab; label: string; icon: typeof Sparkles }[] = [
 
 const keyState = computed(() => {
   if (removeKey.value) return '保存后将删除 Key'
+  if (provider.value?.credentialError) return '凭据库不可用'
   if (apiKey.value.trim()) return '保存后更新 Key'
   return provider.value?.hasApiKey ? '已安全保存' : '尚未配置'
+})
+
+const credentialBackendLabel = computed(() => {
+  switch (provider.value?.credentialBackend) {
+    case 'windows-credential-manager':
+      return 'Windows 凭据管理器'
+    case 'macos-keychain':
+      return 'macOS 钥匙串'
+    case 'linux-secret-service':
+      return 'Linux Secret Service'
+    default:
+      return '系统凭据库'
+  }
 })
 
 onMounted(async () => {
@@ -103,7 +117,7 @@ async function saveProvider() {
     provider.value = updated
     apiKey.value = ''
     removeKey.value = false
-    ui.success('模型配置已保存', 'API Key 只写入 Windows 凭据管理器')
+    ui.success('模型配置已保存', `API Key 只写入${credentialBackendLabel.value}`)
   } catch (error) {
     ui.error('保存模型配置失败', friendlyMessage(error))
   } finally {
@@ -292,7 +306,7 @@ function close() {
                 <section class="settings-section">
                   <h3>OpenAI-compatible 服务</h3>
                   <p class="settings-help">
-                    Vesrio 直接从本机访问你填写的基础地址。API Key 只保存在 Windows 凭据管理器，不进入 SQLite、JSON 或日志。
+                    Vesrio 直接从本机访问你填写的基础地址。API Key 只保存在{{ credentialBackendLabel }}，不进入 SQLite、JSON 或日志。
                   </p>
                   <div class="provider-presets" role="group" aria-label="服务预设">
                     <span class="settings-help">快速填充：</span>
@@ -348,6 +362,9 @@ function close() {
                       placeholder="留空则保持现有 Key"
                     />
                   </label>
+                  <p v-if="provider?.credentialError" class="settings-error">
+                    系统凭据库不可用：{{ provider.credentialError }}
+                  </p>
                   <label class="toggle-row toggle-row--compact">
                     <span>
                       <strong>删除已保存的 Key</strong>
@@ -362,7 +379,7 @@ function close() {
                       <Check v-else :size="13" />
                       保存配置
                     </button>
-                    <button class="btn btn--small" :disabled="testing || !provider?.hasApiKey" @click="testConnection">
+                    <button class="btn btn--small" :disabled="testing || !provider?.hasApiKey || !!provider?.credentialError" @click="testConnection">
                       <Loader2 v-if="testing" :size="13" class="spin" />
                       {{ testing ? '测试中…' : '测试连接' }}
                     </button>

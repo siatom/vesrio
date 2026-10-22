@@ -56,6 +56,8 @@ pub struct ProviderConfigView {
     pub temperature: f32,
     pub max_tokens: u32,
     pub has_api_key: bool,
+    pub credential_backend: String,
+    pub credential_error: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]

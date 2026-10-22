@@ -415,11 +415,11 @@ pub fn set_settings(
 #[tauri::command]
 pub fn get_provider_config(state: State<'_, AppState>) -> AppResult<ProviderConfigView> {
     let config = state.db.provider_config()?;
-    let has_api_key = state
-        .secrets
-        .get()
-        .map(|key| key.is_some())
-        .unwrap_or(false);
+    let (has_api_key, credential_error) = match state.secrets.get() {
+        Ok(Some(_)) => (true, None),
+        Ok(None) => (false, None),
+        Err(error) => (false, Some(error.to_string())),
+    };
     Ok(ProviderConfigView {
         base_url: config.base_url,
         model: config.model,
@@ -427,6 +427,8 @@ pub fn get_provider_config(state: State<'_, AppState>) -> AppResult<ProviderConf
         temperature: config.temperature,
         max_tokens: config.max_tokens,
         has_api_key,
+        credential_backend: state.secrets.backend().to_string(),
+        credential_error,
     })
 }
 
@@ -443,22 +445,26 @@ pub fn save_provider_config(
             return Err(AppError::invalid("API key is too long"));
         }
     }
-    state.db.save_provider_config(&config)?;
-    if let Some(key) = api_key {
-        if !key.trim().is_empty() {
-            state.secrets.set(&key)?;
-        }
+
+    // Update the credential store before persisting the config: if the
+    // platform backend is unavailable, the user sees the error and the saved
+    // provider settings stay unchanged.
+    let key_updated = api_key.as_deref().is_some_and(|key| !key.trim().is_empty());
+    if let Some(key) = api_key.as_deref().filter(|key| !key.trim().is_empty()) {
+        state.secrets.set(key)?;
     }
     if remove_api_key {
         state.secrets.delete()?;
     }
+    state.db.save_provider_config(&config)?;
     state.log(
         "info",
         "provider_config_saved",
         json!({
             "model": config.model,
             "host": config.base_url.trim_start_matches("https://").trim_start_matches("http://").split('/').next(),
-            "keyUpdated": !remove_api_key,
+            "keyUpdated": key_updated,
+            "keyRemoved": remove_api_key,
         }),
     );
     get_provider_config(state)

@@ -335,12 +335,16 @@ export async function mockInvoke<T>(command: string, args: Record<string, unknow
         temperature: 0.4,
         maxTokens: 384000,
         hasApiKey: true,
+        credentialBackend: 'memory-test',
+        credentialError: null,
       } satisfies ProviderConfigView as T
 
     case 'save_provider_config':
       return {
         ...(args.config as object),
         hasApiKey: true,
+        credentialBackend: 'memory-test',
+        credentialError: null,
       } as T
 
     case 'test_provider':

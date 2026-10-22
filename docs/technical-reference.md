@@ -71,11 +71,11 @@ Tauri commands（src-tauri/src/commands.rs）
 
 | 命令 | 参数 | 返回 |
 | --- | --- | --- |
-| `get_provider_config` | — | `ProviderConfigView`（含 `hasApiKey`，不含 key） |
+| `get_provider_config` | — | `ProviderConfigView`（含 `hasApiKey`、`credentialBackend`、`credentialError`，不含 key） |
 | `save_provider_config` | `config`, `apiKey?`, `removeApiKey` | `ProviderConfigView` |
 | `test_provider` | — | `{ host, models }` |
 
-`ProviderConfig`：`baseUrl`、`model`、`timeoutMs`、`temperature`、`maxTokens`。默认预设为 DeepSeek（`https://api.deepseek.com` / `deepseek-flash`，最大输出 384K）。API key 写入 Windows 凭据管理器，service `com.vesrio.app`，account `provider-default`。
+`ProviderConfig`：`baseUrl`、`model`、`timeoutMs`、`temperature`、`maxTokens`。默认预设为 DeepSeek（`https://api.deepseek.com` / `deepseek-flash`，最大输出 384K）。API key 写入各平台原生凭据库（Windows Credential Manager / macOS Keychain / Linux Secret Service），service `com.vesrio.app`，account `provider-default`。
 
 ### 3.3 行内建议
 
@@ -232,7 +232,7 @@ Tauri commands（src-tauri/src/commands.rs）
 
 | 风险 | 措施 |
 | --- | --- |
-| API key 泄露 | Windows 凭据管理器；DB/JSON/日志无 key 列；界面仅显示状态 |
+| API key 泄露 | 各平台原生凭据库（Windows Credential Manager / macOS Keychain / Linux Secret Service）；DB/JSON/日志无 key 列；界面只显示状态；后端不可用时不降级 |
 | 正文进入日志 | `security::redact` 按键名与模式脱敏；审计事件只记录摘要 |
 | 提示注入 | 模型输出不执行；候选经长度、链接、数字、禁用词校验 |
 | 越界写入 | `writeScope` 固定；Apply 校验 revision 与选区 hash |
