@@ -158,6 +158,45 @@
   flex: none;
 }
 
+/* Caption buttons replace the native title bar (window is undecorated). */
+.window-controls {
+  display: flex;
+  align-self: stretch;
+  flex: none;
+  margin: 0 -10px 0 4px;
+}
+
+.window-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-muted);
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+
+.window-control:hover {
+  background: var(--panel-strong);
+  color: var(--text);
+}
+
+.window-control:active {
+  background: var(--border);
+}
+
+.window-control--close:hover,
+.window-control--close:active {
+  background: var(--caption-close-bg);
+  color: var(--caption-close-text);
+}
+
 .save-state {
   display: inline-flex;
   align-items: center;

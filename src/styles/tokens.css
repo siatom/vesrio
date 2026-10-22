@@ -28,6 +28,8 @@
   --success-soft: rgba(78, 122, 90, 0.12);
   --selection: rgba(184, 92, 56, 0.18);
   --editor-active-line: rgba(31, 36, 41, 0.027);
+  --caption-close-bg: #c42b1c;
+  --caption-close-text: #ffffff;
   --code-bg: rgba(31, 36, 41, 0.055);
   --search-match: rgba(214, 178, 90, 0.36);
   --search-match-border: rgba(167, 107, 28, 0.4);
