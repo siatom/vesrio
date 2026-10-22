@@ -1,119 +1,150 @@
+<div align="center">
+
 # 文屿 · Vesrio
 
-**Your words. Your voice.** 你的文字，你的声音。
+**An island for your words.**
 
-Vesrio 是一个作者主导、Agent 协同的 **Windows 11 本地 Markdown 写作应用**。作者直接编辑正文；行内 AI 只在选区上提出候选，必须经作者审阅并点击「接受」才会写入，且可一步撤销；过期补丁默认拒绝。Markdown 文件始终是正文唯一真源。
+`Windows 11` · `Tauri 2` · `Vue 3` · `CodeMirror 6` · `v0.1.0`
 
-## 当前状态
+[English](./README.md) · [简体中文](./README.zh-CN.md)
 
-V0.1 功能实现与自动化验证已完成：
+</div>
 
-- Markdown 打开/保存保真、原子写入、外部修改冲突处理、快照恢复。
-- CodeMirror 6 编辑器、实时预览/源码模式、大纲、标签页、专注/审阅模式、深浅主题。
-- 行内选区 AI：范围选择、隐私预览、流式候选、Diff 审阅、2～3 候选切换、接受/拒绝/撤销、过期阻断。
-- Agent 只读对话、引用跳转、会话持久化、项目风格卡。
-- SQLite 迁移、Windows 凭据管理器存 key、日志脱敏、统一错误码。
-- Windows x64 NSIS 安装包可构建。
+> **Your words. Your voice.**
 
-尚需真实设备/真实用户完成的事项见 [docs/known-issues.md](./docs/known-issues.md) 与 [docs/release-checklist.md](./docs/release-checklist.md)：
-开发机临时目录已通过安装/启动/卸载与用户 `.md` 保留验证；干净主机、升级迁移、完整桌面用户旅程与真实用户内测仍待完成。
+Vesrio is a local-first Markdown writing desk for Windows 11 — a quiet room where the author keeps the pen and the agent learns to wait.
 
-## 技术栈
+Most AI writing tools begin with an empty page and end in someone else's voice. Vesrio begins where writing actually happens: inside a sentence you have already chosen, at a desk you already trust. You edit directly. When you want company, select a passage and ask. The model answers with candidates, never corrections. Nothing touches the page until you say yes.
 
-| 层 | 方案 |
+## The premise
+
+**The author holds the pen.** The editor is the main interface; conversation is a side door. Writing is not a prompt awaiting completion.
+
+**A suggestion is a guest.** Inline AI works only on the selection you grant it. Every candidate arrives as a diff, waits beside the sentence, and leaves no trace if refused. Acceptance is one decision; regret is one undo.
+
+**Yesterday's patch does not land today.** If the source changed while the model was thinking, the suggestion is marked stale and cannot be applied. A beautiful sentence in the wrong place is still damage.
+
+**The file outlives the app.** Your `.md` stays plain Markdown that any editor can open — no proprietary markers, no lock-in. Vesrio's own memory (sessions, styles, snapshots) lives beside your text, never inside it.
+
+## What V0.1 holds
+
+- **A surface that disappears.** CodeMirror 6 editing with live preview, source mode, outline, tabs, focus and review modes, light and dark themes, and a typographic measure you can adjust.
+- **Inline AI, close to the sentence.** Shorten, polish, or rewrite from the floating toolbar or `Ctrl + J`; one to three candidates; side-by-side diff review; accept, reject, switch, and a single-step undo. Stale suggestions are blocked.
+- **An agent that reads, not writes.** A side-panel conversation whose citations jump back into the text, with per-document history and a project style card. Read-only by design.
+- **Memory with a conscience.** Atomic saves, external-change conflict handling, snapshots before acceptance and restoration, API keys in Windows Credential Manager, and redacted logs.
+- **A real desktop artifact.** SQLite migrations, a unified error vocabulary, and a Windows x64 NSIS installer.
+
+## Status, honestly
+
+V0.1 is feature-complete and covered by automated verification: a 24-file byte-fidelity golden corpus, stale-patch race tests, failure-safe AI paths, Rust contract tests, and desktop E2E against real WebView2.
+
+Still open: the full journey on a clean Windows machine, upgrade migration, installer code signing, and a beta with real long-form writers. The details live in [known issues](./docs/known-issues.md) and the [release checklist](./docs/release-checklist.md). We would rather say this plainly than pretend the last mile is already behind us.
+
+## What it declines to do
+
+No cloud. No account. No telemetry. No multiplayer. No mobile app. No autonomous full-document rewrite, no cross-document RAG, no automatic publishing.
+
+These are not gaps waiting to be filled; they are the shape of the product. Attention is the scarce resource, and a writing desk should not compete with the writer.
+
+## The stack
+
+| Layer | Choice |
 | --- | --- |
-| 桌面容器 | Tauri 2 / Rust |
-| UI | Vue 3 + TypeScript + Vite |
-| 编辑器 | CodeMirror 6 |
-| 状态 | Pinia |
-| 元数据 | SQLite（rusqlite，bundled） |
-| 凭据 | Windows Credential Manager（keyring） |
-| 模型访问 | OpenAI-compatible HTTP + SSE（reqwest/rustls） |
-| 工程 | pnpm + Cargo |
+| Desktop shell | Tauri 2 / Rust |
+| Interface | Vue 3 + TypeScript + Vite |
+| Editor | CodeMirror 6 |
+| State | Pinia |
+| Metadata | SQLite (rusqlite, bundled) |
+| Credentials | Windows Credential Manager (keyring) |
+| Model access | OpenAI-compatible HTTP + SSE (reqwest / rustls) |
+| Tooling | pnpm + Cargo |
 
-## 环境要求
+Vesrio speaks to any OpenAI-compatible endpoint. The default preset is DeepSeek Flash (`deepseek-flash`); OpenAI and custom base URLs are one setting away.
 
-- Windows 11 x64（开发机需 WebView2 Runtime）。
-- Node.js ≥ 20，pnpm 11。
-- Rust stable（MSVC toolchain）与 Visual Studio Build Tools（C++ 桌面开发）。
-- 仅运行打包后的应用不需要 Node/Rust。
+## Requirements
 
-首次安装依赖：
+- Windows 11 x64 (WebView2 Runtime on development machines).
+- Node.js ≥ 20 and pnpm 11.
+- Rust stable (MSVC toolchain) and Visual Studio Build Tools with C++ desktop support.
+- Running the packaged app requires neither Node nor Rust.
+
+## First light
 
 ```bash
 pnpm install
+pnpm dev          # front end only (browser; no desktop capabilities)
+pnpm tauri:dev    # the real desk
+pnpm build        # type check + production build
+pnpm tauri:build  # Windows NSIS installer
 ```
 
-## 开发
+The installer lands at `src-tauri/target/release/bundle/nsis/Vesrio_0.1.0_x64-setup.exe`.
+
+## Before you trust it
 
 ```bash
-pnpm dev          # 仅前端（浏览器；无桌面能力）
-pnpm tauri:dev    # 桌面开发模式
-pnpm build        # 前端类型检查 + 生产构建
-pnpm tauri:build  # Windows NSIS 安装包
-```
-
-安装包输出：`src-tauri/target/release/bundle/nsis/Vesrio_0.1.0_x64-setup.exe`。
-
-## 测试与质量门禁
-
-```bash
-# 前端
+# Front end
 pnpm typecheck
 pnpm lint
-pnpm test                 # Vitest 单元测试
-pnpm test:e2e             # Playwright E2E（使用本机 Chrome + 开发 mock 后端）
-pnpm test:desktop         # 真实 Tauri/WebView2 桌面 E2E（隔离测试标识）
+pnpm test                 # Vitest unit tests
+pnpm test:e2e             # Playwright E2E (local Chrome + mock backend)
+pnpm test:desktop         # real Tauri/WebView2 desktop E2E
 pnpm build
 
-# Rust（在 src-tauri 下）
+# Rust (inside src-tauri)
 cargo fmt --check
 cargo clippy --all-targets -- -D warnings
 cargo test
 
-# 内容与交付
-pnpm check:golden      # 24 个黄金 Markdown 样本字节指纹
-pnpm check:licenses    # 生成 docs/licenses-report.md
-pnpm checksums         # 生成 release/SHA256SUMS.txt
+# Content and delivery
+pnpm check:golden         # byte fingerprints for 24 golden Markdown samples
+pnpm check:licenses       # regenerate docs/licenses-report.md
+pnpm checksums            # regenerate release/SHA256SUMS.txt
 ```
 
-> E2E 使用 `src/lib/mockBackend.ts`（仅 DEV + `VITE_MOCK_BACKEND=true`）验证 UI 与交互时序，**不能替代 Rust 后端与真实模型的验收**。Rust 合同、文件保真和性能由 `cargo test` 覆盖。
+> E2E uses `src/lib/mockBackend.ts` (DEV plus `VITE_MOCK_BACKEND=true`) to exercise interface and timing. It does not replace Rust backend or real-model acceptance; contracts, file fidelity, and performance are covered by `cargo test`.
 
-## 目录
+## Where your words live
+
+- Your `.md` files never receive application-private markers. A save with no edits writes nothing to disk.
+- Application data lives in `%APPDATA%\com.vesrio.app`:
+  - `vesrio.db` — projects, sessions, suggestions, styles, snapshot index, audit events.
+  - `snapshots/` — snapshot copies of document text.
+  - `logs/` — redacted logs.
+- API keys exist only in Windows Credential Manager (service `com.vesrio.app`). No plaintext key reaches SQLite or the logs.
+- Before anything is sent to a model, the interface shows the exact scope and character count. Text never crosses projects silently.
+- Uninstalling Vesrio does not delete your source `.md` files; whether to remove application data is your decision.
+
+## Repository map
 
 ```text
-src/                     Vue UI、编辑器、状态、行内 AI、Agent、设置
-src-tauri/src/           Tauri commands、document、storage、provider、suggestion、security
-src-tauri/migrations/    SQLite 迁移
-tests/unit/              前端单元测试
+src/                     Vue UI, editor, state, inline AI, agent, settings
+src-tauri/src/           Tauri commands, document, storage, provider, suggestion, security
+src-tauri/migrations/    SQLite migrations
+tests/unit/              Front-end unit tests
 tests/e2e/               Playwright E2E
-tests/fixtures/markdown/ 黄金 Markdown 语料与指纹
-scripts/                 黄金校验、许可证、校验和
-docs/                    PRD、开发计划、WBS、ADR、用户与发布文档
+tests/fixtures/markdown/ Golden Markdown corpus and fingerprints
+scripts/                 Golden checks, licenses, checksums
+docs/                    PRD, plan, WBS, ADRs, user and release documents
 ```
 
-## 数据与隐私
+## Further reading
 
-- 用户 `.md` 文件不写入应用私有标记；无编辑保存不写盘。
-- 应用数据默认位于 `%APPDATA%\com.vesrio.app`：
-  - `vesrio.db`：项目、会话、建议、风格、快照索引、审计事件。
-  - `snapshots/`：快照正文副本。
-  - `logs/`：脱敏日志。
-- API key 只保存在 Windows 凭据管理器（service `com.vesrio.app`），SQLite 与日志中不存在明文 key。
-- 发送给模型前，界面展示外发范围与字符数；项目之间不会静默携带正文。
-- 卸载应用不会删除用户源 `.md`；是否清理应用数据由用户决定。
+Project documents are currently written in Simplified Chinese.
 
-## 文档
+- [User guide](./docs/user-guide.md)
+- [Technical reference: commands, data model, migrations](./docs/technical-reference.md)
+- [Security and privacy audit](./docs/security-audit.md)
+- [Known issues and limits](./docs/known-issues.md)
+- [Release checklist and rollback](./docs/release-checklist.md)
+- [Third-party license report](./docs/licenses-report.md)
+- [Architecture decision records](./docs/adr/README.md)
+- [Product requirements](./docs/prd.md) · [Development plan](./docs/development-plan.md) · [WBS](./docs/wbs.md)
 
-- [用户指南](./docs/user-guide.md)
-- [技术参考（命令/数据模型/迁移）](./docs/technical-reference.md)
-- [安全与隐私审计](./docs/security-audit.md)
-- [已知问题与限制](./docs/known-issues.md)
-- [发布检查单与回滚](./docs/release-checklist.md)
-- [第三方许可证报告](./docs/licenses-report.md)
-- [架构决策记录](./docs/adr/README.md)
-- [产品需求](./docs/prd.md) / [开发计划](./docs/development-plan.md) / [WBS](./docs/wbs.md)
+## License
 
-## 许可证
+Vesrio is released under the [MIT License](./LICENSE). Third-party license notices are listed in [docs/licenses-report.md](./docs/licenses-report.md).
 
-第三方依赖许可证清单见 [docs/licenses-report.md](./docs/licenses-report.md)。Vesrio 自身源码的许可方式由项目负责人另行确定，在明确前不视为开源授权。
+---
+
+<div align="center"><sub>Write slowly. Keep the voice.</sub></div>
