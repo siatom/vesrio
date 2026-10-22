@@ -89,6 +89,21 @@ fn modified_ms(metadata: &fs::Metadata) -> Option<i64> {
         .map(|d| d.as_millis() as i64)
 }
 
+/// Refuse to replace a read-only file at the Rust layer. The editor also shows
+/// a read-only banner, but a command call must not rely on the frontend for
+/// this protection. On Unix `rename` would otherwise replace a 0444 file as
+/// long as its directory is writable.
+fn ensure_writable(path: &Path) -> AppResult<()> {
+    let metadata = fs::metadata(path)
+        .map_err(|e| AppError::io(format!("could not read file metadata: {e}"), Some(path)))?;
+    if metadata.permissions().readonly() {
+        return Err(AppError::Permission {
+            message: "document is read-only; use Save As to write a copy".into(),
+        });
+    }
+    Ok(())
+}
+
 fn read_raw(path: &Path) -> AppResult<(Vec<u8>, fs::Metadata)> {
     let metadata = fs::metadata(path)
         .map_err(|e| AppError::io(format!("could not read file metadata: {e}"), Some(path)))?;
@@ -192,6 +207,7 @@ impl DocumentStore {
         let mut wrote = false;
         let mut bytes_written = 0u64;
         if normalized != doc.original_text || force {
+            ensure_writable(&doc.path)?;
             let bytes = encode(&normalized, doc.encoding, doc.save_eol);
             atomic_write(&doc.path, &bytes)?;
             bytes_written = bytes.len() as u64;
@@ -250,6 +266,9 @@ impl DocumentStore {
                 disk_hash: hash,
                 expected_hash: String::new(),
             });
+        }
+        if target.exists() {
+            ensure_writable(&target)?;
         }
 
         let normalized = normalize_eol(text);
@@ -419,6 +438,21 @@ mod tests {
         (dir, path)
     }
 
+    #[allow(clippy::permissions_set_readonly_false)]
+    fn restore_writable(path: &Path) {
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            fs::set_permissions(path, fs::Permissions::from_mode(0o600)).unwrap();
+        }
+        #[cfg(not(unix))]
+        {
+            let mut permissions = fs::metadata(path).unwrap().permissions();
+            permissions.set_readonly(false);
+            fs::set_permissions(path, permissions).unwrap();
+        }
+    }
+
     #[test]
     fn no_edit_save_is_byte_identical_for_all_golden_edge_cases() {
         let cases: Vec<Vec<u8>> = vec![
@@ -504,5 +538,85 @@ mod tests {
         assert_eq!(reloaded.text, "v2\n");
         assert_eq!(reloaded.eol, "crlf");
         assert_eq!(reloaded.revision, 2);
+    }
+
+    #[test]
+    fn read_only_document_is_rejected_without_writing() {
+        let (_dir, path) = temp_doc(b"safe\n");
+        let mut permissions = fs::metadata(&path).unwrap().permissions();
+        permissions.set_readonly(true);
+        fs::set_permissions(&path, permissions).unwrap();
+
+        let mut store = DocumentStore::default();
+        let view = store.open(&path, None, None).unwrap();
+        assert!(view.read_only);
+
+        let result = store.save(&view.id, "changed\n", None, true);
+
+        // Restore before assertions so Windows can clean up the directory.
+        restore_writable(&path);
+
+        let error = result.unwrap_err();
+        assert_eq!(error.code(), "permission_denied");
+        assert_eq!(fs::read(&path).unwrap(), b"safe\n");
+        assert_eq!(store.text(&view.id).unwrap(), "safe\n");
+    }
+
+    #[test]
+    fn save_as_refuses_a_read_only_target() {
+        let (_dir, path) = temp_doc(b"source\n");
+        let target = path.with_file_name("target.md");
+        fs::write(&target, b"target\n").unwrap();
+        let mut permissions = fs::metadata(&target).unwrap().permissions();
+        permissions.set_readonly(true);
+        fs::set_permissions(&target, permissions).unwrap();
+
+        let mut store = DocumentStore::default();
+        let view = store.open(&path, None, None).unwrap();
+        let result = store.save_as(&view.id, &target, "new\n", true);
+
+        restore_writable(&target);
+
+        assert_eq!(result.unwrap_err().code(), "permission_denied");
+        assert_eq!(fs::read(&target).unwrap(), b"target\n");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn unix_save_preserves_original_permissions() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let (_dir, path) = temp_doc(b"v1\n");
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).unwrap();
+
+        let mut store = DocumentStore::default();
+        let view = store.open(&path, None, None).unwrap();
+        store.save(&view.id, "v2\n", None, false).unwrap();
+
+        let mode = fs::metadata(&path).unwrap().permissions().mode() & 0o777;
+        assert_eq!(mode, 0o600);
+        assert_eq!(fs::read(&path).unwrap(), b"v2\n");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn unix_save_follows_a_symlink_and_keeps_it() {
+        use std::os::unix::fs::symlink;
+
+        let dir = tempfile::tempdir().unwrap();
+        let real = dir.path().join("real.md");
+        let link = dir.path().join("link.md");
+        fs::write(&real, b"v1\n").unwrap();
+        symlink(&real, &link).unwrap();
+
+        let mut store = DocumentStore::default();
+        let view = store.open(&link, None, None).unwrap();
+        store.save(&view.id, "v2\n", None, false).unwrap();
+
+        assert!(fs::symlink_metadata(&link)
+            .unwrap()
+            .file_type()
+            .is_symlink());
+        assert_eq!(fs::read(&real).unwrap(), b"v2\n");
     }
 }

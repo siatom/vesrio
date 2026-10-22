@@ -70,7 +70,7 @@ src-tauri/src/security/logger.rs  写入前 redact_json + redact_text
 | 越界写入 | 接受前校验 revision + 选区 SHA-256；只替换 anchor 范围；前端比对 `newText` 后不一致即撤销 | `suggestion/service.rs`、`tests/e2e/editor-ai.spec.ts` |
 | 过期补丁 | `stale` 状态 + 服务端拒绝 | 同上 |
 | 重复接受 | 状态机 + `alreadyApplied` 幂等 | `repeated_apply_is_idempotent` |
-| 文件损坏 | 临时文件 + `ReplaceFileW`；失败保留原文件；快照 | `document/atomic.rs`、`store.rs` |
+| 文件损坏 | 临时文件 + 平台原子替换（Windows `ReplaceFileW` / Unix `rename` + 权限保留）；失败保留原文件；快照 | `document/atomic.rs`、`store.rs` |
 | 外部修改覆盖 | 保存校验 `diskHash`；冲突返回可选处理 | `external_conflict` 测试 |
 | 快照路径穿越 | 文档 id 清洗 + 快照根目录校验 | `document_ids_cannot_escape_snapshot_root` |
 | WebView 任意网络/脚本 | CSP：脚本同源、连接仅 IPC；模型请求在 Rust | `tauri.conf.json` |

@@ -74,6 +74,7 @@ Windows 桌面烟测仍是独立命令：`pnpm test:desktop`（VES-067 会按平
 | 日期 | 提交 | 运行 | 结果 |
 | --- | --- | --- | --- |
 | 2026-10-22 | `e2df108` | [39794658980](https://github.com/siatom/vesrio/actions/runs/39794658980) | 四任务全部成功，15m22s |
+| 2026-10-22 | `b045cab` | [39798075353](https://github.com/siatom/vesrio/actions/runs/39798075353) | 四任务全部成功；验证凭据后端三平台编译 |
 
 - `windows-x64`：PASS
 - `macos-arm64`：PASS

@@ -26,6 +26,16 @@ V0.1 明确以 Windows 11 x64 首发，现有实现也围绕 Windows 验证：�
    - 替换后对父目录执行 fsync，补足断电持久性；
    - Rust 命令层在保存前校验只读状态，不依赖前端拦截；
    - 符号链接先解析目标，硬链接与 xattr/ACL 的保留策略需文档化，不能静默声称已保留。
+
+### VES-058 实现记录（2026-10-22）
+
+- Unix 在 `rename` 前用原文件 `Permissions` 覆盖临时文件，保留 mode/read-only 位；临时文件由同一用户创建，owner 不变，group 可能随目录默认值变化。
+- `rename` 后 best-effort fsync 父目录；文件数据已在替换前 `sync_all`。
+- `DocumentStore::save` 与 `save_as` 在 Rust 层拒绝只读目标，返回 `permission_denied`；不依赖前端。
+- `open` 通过 `canonicalize` 解析符号链接并写回真实目标，链接本身保留。
+- 硬链接在替换后只更新目标目录项，其他链接仍指向旧 inode。
+- ACL/xattr 不复制；需要完整元数据保真的场景不在 V0.2 承诺内。
+- `save_as` 若直接指向一个符号链接路径，仍可能替换链接本身；统一处理留给 VES-060。
 5. **平台 UI 适配**：快捷键文案按平台显示 `⌘` / `Ctrl`；macOS 使用系统菜单与窗口装饰约定，避免原生标题栏与自绘标题栏叠加；字体栈补齐 Linux CJK 回退。平台差异集中在适配层，不复制业务逻辑。
 6. **验证策略**：三平台 CI 至少覆盖 typecheck/lint/test/build、Rust 检查、黄金样本与许可证；桌面 E2E 按平台能力选择方案（Windows WebView2 CDP、Linux WebDriver、macOS 脚本化人工验收或后续替代方案）。未在目标系统实机执行的项只能标记 `Not Verified`。
 7. **范围边界**：V0.2 只做平台化，不新增写作功能。PRD 5.5 原有的 V0.2 SHOULD 功能顺延为 V0.3 候选，需随本 ADR 一并确认。V0.1 的 Windows 行为与验收标准不变。
