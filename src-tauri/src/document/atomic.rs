@@ -2,7 +2,9 @@
 //!
 //! A save writes a sibling temporary file, flushes it to disk, then replaces
 //! the target. On Windows `ReplaceFileW` is used so the ACL and file identity
-//! of the target are preserved. Failure leaves the original file untouched.
+//! of the target are preserved. On Unix the original permission bits are
+//! copied to the replacement and the parent directory is synced. Failure leaves
+//! the original file untouched.
 
 use crate::error::{AppError, AppResult};
 use std::fs::{self, File, OpenOptions};
@@ -48,9 +50,41 @@ fn replace_existing(target: &Path, temp: &Path) -> std::io::Result<()> {
     }
 }
 
-#[cfg(not(windows))]
+#[cfg(unix)]
+fn replace_existing(target: &Path, temp: &Path) -> std::io::Result<()> {
+    copy_permissions(target, temp)?;
+    fs::rename(temp, target)?;
+    sync_parent(target);
+    Ok(())
+}
+
+#[cfg(not(any(windows, unix)))]
 fn replace_existing(target: &Path, temp: &Path) -> std::io::Result<()> {
     fs::rename(temp, target)
+}
+
+/// Copy the original mode/read-only flag onto the replacement file.
+///
+/// On Unix `rename` installs the temporary inode, so without this the document
+/// would silently adopt the temp file's umask-derived permissions (commonly
+/// 0644), widening access to a private manuscript. ACLs and extended attributes
+/// are not copied by this helper; that limitation is documented in ADR-010.
+#[cfg(unix)]
+fn copy_permissions(target: &Path, temp: &Path) -> std::io::Result<()> {
+    let permissions = fs::metadata(target)?.permissions();
+    fs::set_permissions(temp, permissions)
+}
+
+/// Best-effort durability: fsync the parent directory after rename so the
+/// directory entry survives a crash. Some filesystems return EINVAL for
+/// directory fsync; the file data is already synced, so this stays best-effort.
+#[cfg(unix)]
+fn sync_parent(target: &Path) {
+    if let Some(parent) = target.parent() {
+        if let Ok(dir) = File::open(parent) {
+            let _ = dir.sync_all();
+        }
+    }
 }
 
 /// Fallback used when the filesystem does not support `ReplaceFileW`
@@ -65,6 +99,8 @@ fn replace_with_backup(target: &Path, temp: &Path) -> std::io::Result<()> {
             .unwrap_or_default()
     ));
     let _ = fs::remove_file(&backup);
+    #[cfg(unix)]
+    copy_permissions(target, temp)?;
     fs::rename(target, &backup)?;
     match fs::rename(temp, target) {
         Ok(()) => {
