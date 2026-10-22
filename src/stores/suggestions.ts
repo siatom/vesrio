@@ -348,6 +348,7 @@ export const useSuggestionsStore = defineStore('suggestions', {
           return
         }
         this.currentByDocument[tab.document.id] = null
+        workspace.snapshotRevision += 1
         const ui = useUiStore()
         ui.success('已接受建议', '可立即按 Ctrl+Z 撤销，保存后写入磁盘')
         if (useSettingsStore().autoSnapshot) {

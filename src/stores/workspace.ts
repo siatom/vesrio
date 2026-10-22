@@ -39,6 +39,7 @@ export const useWorkspaceStore = defineStore('workspace', {
     project: null as Project | null,
     tree: null as FileNode | null,
     recent: [] as RecentEntry[],
+    snapshotRevision: 0,
     loading: false,
     bootstrapped: false,
   }),
@@ -341,12 +342,15 @@ export const useWorkspaceStore = defineStore('workspace', {
       tab.dirty = true
       tab.saveState = 'dirty'
       tab.editRevision += 1
+      this.snapshotRevision += 1
       return outcome
     },
     async createManualSnapshot() {
       const tab = this.activeTab
       if (!tab) return null
-      return api.createSnapshot(tab.document.id, tab.editorText, 'manual')
+      const record = await api.createSnapshot(tab.document.id, tab.editorText, 'manual')
+      this.snapshotRevision += 1
+      return record
     },
     titleFor(id: string): string {
       const tab = this.tabs.find((item) => item.document.id === id)

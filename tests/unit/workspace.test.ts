@@ -107,6 +107,21 @@ describe('workspace store', () => {
     expect(tab?.externalChange?.diskHash).toBe('disk-2')
   })
 
+  it('bumps snapshotRevision when a manual snapshot is created', async () => {
+    const workspace = useWorkspaceStore()
+    workspace.addTab(view())
+    vi.mocked(api.createSnapshot).mockResolvedValue({
+      id: 'snapshot-1',
+      documentId: 'doc-1',
+      contentHash: 'hash',
+      source: 'manual',
+      sizeBytes: 6,
+      createdAt: new Date().toISOString(),
+    })
+    await workspace.createManualSnapshot()
+    expect(workspace.snapshotRevision).toBe(1)
+  })
+
   it('does not lose edits when save fails for an IO reason', async () => {
     const workspace = useWorkspaceStore()
     workspace.addTab(view())

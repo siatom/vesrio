@@ -5,10 +5,12 @@ import { api } from '@/lib/api'
 import { friendlyMessage } from '@/lib/errors'
 import type { SnapshotRecord } from '@/lib/types'
 import { formatBytes, formatDateTime } from '@/lib/text'
+import { useSettingsStore } from '@/stores/settings'
 import { useUiStore } from '@/stores/ui'
 import { useWorkspaceStore } from '@/stores/workspace'
 
 const workspace = useWorkspaceStore()
+const settings = useSettingsStore()
 const ui = useUiStore()
 const snapshots = ref<SnapshotRecord[]>([])
 const loading = ref(false)
@@ -40,6 +42,12 @@ async function load() {
 
 onMounted(load)
 watch(documentId, load)
+watch(
+  [() => workspace.snapshotRevision, () => settings.inspectorTab],
+  ([, tab]) => {
+    if (tab === 'revisions') void load()
+  },
+)
 
 async function createSnapshot() {
   busy.value = true
