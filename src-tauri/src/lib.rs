@@ -7,6 +7,7 @@ pub mod provider;
 pub mod security;
 pub mod storage;
 pub mod suggestion;
+pub mod window_chrome;
 
 use commands::AppState;
 use tauri::Manager;
@@ -20,6 +21,14 @@ pub fn run() {
             let data_dir = app.path().app_data_dir()?;
             let state = AppState::initialize(&data_dir)?;
             app.manage(state);
+
+            // Windows 11 Snap Layouts needs the native hit test to see the
+            // app-drawn maximize button; macOS keeps its own traffic lights.
+            #[cfg(windows)]
+            if let Some(window) = app.get_webview_window("main") {
+                window_chrome::install(&window)?;
+            }
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -60,6 +69,7 @@ pub fn run() {
             commands::get_style_profile,
             commands::save_style_profile,
             commands::report_client_event,
+            commands::set_caption_button_rect,
             commands::debug_paths,
         ])
         .run(tauri::generate_context!())

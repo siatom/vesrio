@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { getCurrentWindow } from '@tauri-apps/api/window'
-import type { UnlistenFn } from '@tauri-apps/api/event'
+import { listen, type UnlistenFn } from '@tauri-apps/api/event'
 import {
   Copy,
   FilePlus2,
@@ -21,7 +21,8 @@ import {
   X,
 } from 'lucide-vue-next'
 import AppLogo from './AppLogo.vue'
-import { isTauri } from '@/lib/api'
+import { api, isTauri } from '@/lib/api'
+import { platformFamily } from '@/lib/platform'
 import { useSettingsStore } from '@/stores/settings'
 import { useUiStore } from '@/stores/ui'
 import { useWorkspaceStore } from '@/stores/workspace'
@@ -36,6 +37,16 @@ const ui = useUiStore()
 const currentWindow = isTauri() ? getCurrentWindow() : null
 const windowMaximized = ref(false)
 let unlistenResized: UnlistenFn | null = null
+
+// Windows keeps the self-drawn caption buttons and feeds their rectangle to the
+// native hit test so hovering still opens Snap Layouts. macOS uses the native
+// traffic lights instead, so the app draws no caption buttons there.
+const isMac = ref(false)
+const platformReady = ref(false)
+const captionHovered = ref(false)
+const maximizeButton = ref<HTMLButtonElement | null>(null)
+let unlistenCaption: UnlistenFn[] = []
+let captionRectSent = false
 
 onMounted(async () => {
   const win = currentWindow
@@ -53,12 +64,54 @@ onMounted(async () => {
   } catch {
     // Window metadata is best-effort; the caption buttons still work without it.
   }
+  await setupCaptionButtons()
 })
 
 onBeforeUnmount(() => {
   unlistenResized?.()
   unlistenResized = null
+  window.removeEventListener('resize', reportCaptionRect)
+  for (const unlisten of unlistenCaption) unlisten()
+  unlistenCaption = []
+  if (captionRectSent) {
+    captionRectSent = false
+    void api.setCaptionButtonRect(null).catch(() => undefined)
+  }
 })
+
+async function setupCaptionButtons() {
+  if (!currentWindow) return
+  try {
+    isMac.value = platformFamily((await api.appInfo()).platform) === 'macos'
+  } catch {
+    isMac.value = false
+  }
+  platformReady.value = true
+  if (isMac.value) return
+
+  await nextTick()
+  reportCaptionRect()
+  window.addEventListener('resize', reportCaptionRect)
+  unlistenCaption = await Promise.all([
+    listen('caption:maximize-click', () => {
+      void toggleMaximizeWindow()
+    }),
+    listen<boolean>('caption:hover', (event) => {
+      captionHovered.value = event.payload
+    }),
+  ])
+}
+
+/** Keep the native hit-test rectangle aligned with the rendered button. */
+function reportCaptionRect() {
+  const button = maximizeButton.value
+  if (!button) return
+  const rect = button.getBoundingClientRect()
+  captionRectSent = true
+  void api
+    .setCaptionButtonRect({ x: rect.left, y: rect.top, width: rect.width, height: rect.height })
+    .catch(() => undefined)
+}
 
 function minimizeWindow() {
   void currentWindow?.minimize().catch(() => undefined)
@@ -132,7 +185,7 @@ async function closeTab(id: string) {
 </script>
 
 <template>
-  <header class="titlebar" data-tauri-drag-region="deep">
+  <header class="titlebar" :class="{ 'titlebar--mac': isMac }" data-tauri-drag-region="deep">
     <div class="titlebar__brand">
       <AppLogo :size="24" />
       <span class="titlebar__name">文屿</span>
@@ -248,12 +301,14 @@ async function closeTab(id: string) {
       </div>
     </div>
 
-    <div v-if="currentWindow" class="window-controls">
+    <div v-if="currentWindow && platformReady && !isMac" class="window-controls">
       <button class="window-control" aria-label="最小化" title="最小化" @click="minimizeWindow">
         <Minus :size="15" />
       </button>
       <button
+        ref="maximizeButton"
         class="window-control"
+        :class="{ 'window-control--hover': captionHovered }"
         :aria-label="windowMaximized ? '还原窗口' : '最大化'"
         :title="windowMaximized ? '还原窗口' : '最大化'"
         @click="toggleMaximizeWindow"

@@ -275,6 +275,11 @@ body.is-resizing * {
   flex: none;
 }
 
+/* macOS keeps the native traffic lights; reserve room for them. */
+.titlebar--mac {
+  padding-left: 84px;
+}
+
 /* Caption buttons replace the native title bar (window is undecorated). */
 .window-controls {
   display: flex;
@@ -299,7 +304,10 @@ body.is-resizing * {
     color 120ms ease;
 }
 
-.window-control:hover {
+.window-control:hover,
+/* The maximize button is a non-client area on Windows (Snap Layouts), so the
+   webview never sees :hover there and the native hit test drives it instead. */
+.window-control--hover {
   background: var(--panel-strong);
   color: var(--text);
 }

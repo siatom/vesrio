@@ -4,6 +4,7 @@ import type {
   ApplyOutcome,
   AppInfo,
   AppSettings,
+  CaptionButtonRect,
   ChatResult,
   ConversationRecord,
   DocumentView,
@@ -59,6 +60,11 @@ async function call<T>(command: string, args?: Record<string, unknown>): Promise
 
 export const api = {
   appInfo: () => call<AppInfo>('get_app_info'),
+
+  // Windows only: lets the native hit test expose the self-drawn maximize
+  // button as HTMAXBUTTON so Windows 11 shows Snap Layouts on hover.
+  setCaptionButtonRect: (rect: CaptionButtonRect | null) =>
+    call<void>('set_caption_button_rect', { rect }),
 
   openDocument: (path: string, projectId?: string | null, convertEncoding?: string | null) =>
     call<DocumentView>('open_document', {

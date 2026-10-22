@@ -658,6 +658,9 @@ export async function mockInvoke<T>(command: string, args: Record<string, unknow
     case 'report_client_event':
       return undefined as T
 
+    case 'set_caption_button_rect':
+      return undefined as T
+
     default:
       error('invalid_input', `mock backend does not implement ${command}`)
   }

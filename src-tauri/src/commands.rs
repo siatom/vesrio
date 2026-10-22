@@ -948,3 +948,12 @@ pub fn debug_paths(state: State<'_, AppState>) -> AppResult<Value> {
             .unwrap_or_default(),
     }))
 }
+
+/// Report the app-drawn maximize button rectangle so the native hit test can
+/// expose it as `HTMAXBUTTON` and let Windows 11 offer Snap Layouts on hover.
+///
+/// `rect` is in CSS pixels relative to the client area; `None` clears it.
+#[tauri::command]
+pub fn set_caption_button_rect(rect: Option<crate::window_chrome::CaptionRect>) {
+    crate::window_chrome::set_maximize_button_rect(rect);
+}

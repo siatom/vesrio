@@ -10,6 +10,14 @@ export interface AppErrorPayload {
   details?: Record<string, unknown>
 }
 
+/** App-drawn caption button rectangle, in CSS pixels from the client origin. */
+export interface CaptionButtonRect {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
 export interface AppInfo {
   name: string
   version: string
