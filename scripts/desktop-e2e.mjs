@@ -129,6 +129,20 @@ async function main() {
     )
     checks += 1
 
+    // The app owns the title bar: the native frame is off and all three
+    // caption buttons are rendered by the webview.
+    assert.equal(
+      await page.evaluate(() => window.__TAURI_INTERNALS__.invoke('plugin:window|is_decorated')),
+      false,
+    )
+    assert.deepEqual(
+      await page
+        .locator('.window-controls .window-control')
+        .evaluateAll((buttons) => buttons.map((button) => button.getAttribute('aria-label'))),
+      ['最小化', '最大化', '关闭窗口'],
+    )
+    checks += 1
+
     const info = await page.evaluate(() => window.__TAURI_INTERNALS__.invoke('get_app_info'))
     assert.equal(info.platform, 'windows-x86_64')
     checks += 1

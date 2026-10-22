@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { getCurrentWindow } from '@tauri-apps/api/window'
+import type { UnlistenFn } from '@tauri-apps/api/event'
 import {
+  Copy,
   FilePlus2,
   History,
   Maximize2,
+  Minus,
   Moon,
   PanelLeftClose,
   PanelLeftOpen,
@@ -12,10 +16,12 @@ import {
   Save,
   ScanEye,
   Settings,
+  Square,
   Sun,
   X,
 } from 'lucide-vue-next'
 import AppLogo from './AppLogo.vue'
+import { isTauri } from '@/lib/api'
 import { useSettingsStore } from '@/stores/settings'
 import { useUiStore } from '@/stores/ui'
 import { useWorkspaceStore } from '@/stores/workspace'
@@ -24,6 +30,54 @@ import { friendlyMessage } from '@/lib/errors'
 const workspace = useWorkspaceStore()
 const settings = useSettingsStore()
 const ui = useUiStore()
+
+// The window is undecorated, so the app draws its own caption buttons.
+// They only exist inside the desktop shell; the browser preview keeps none.
+const currentWindow = isTauri() ? getCurrentWindow() : null
+const windowMaximized = ref(false)
+let unlistenResized: UnlistenFn | null = null
+
+onMounted(async () => {
+  const win = currentWindow
+  if (!win) return
+  try {
+    windowMaximized.value = await win.isMaximized()
+    unlistenResized = await win.onResized(() => {
+      win
+        .isMaximized()
+        .then((value) => {
+          windowMaximized.value = value
+        })
+        .catch(() => undefined)
+    })
+  } catch {
+    // Window metadata is best-effort; the caption buttons still work without it.
+  }
+})
+
+onBeforeUnmount(() => {
+  unlistenResized?.()
+  unlistenResized = null
+})
+
+function minimizeWindow() {
+  void currentWindow?.minimize().catch(() => undefined)
+}
+
+async function toggleMaximizeWindow() {
+  const win = currentWindow
+  if (!win) return
+  try {
+    await win.toggleMaximize()
+    windowMaximized.value = await win.isMaximized()
+  } catch {
+    // Ignore: the window may be closing.
+  }
+}
+
+function closeWindow() {
+  void currentWindow?.close().catch(() => undefined)
+}
 
 const activeTab = computed(() => workspace.activeTab)
 const saveLabel = computed(() => {
@@ -78,8 +132,8 @@ async function closeTab(id: string) {
 </script>
 
 <template>
-  <header class="titlebar" data-tauri-drag-region>
-    <div class="titlebar__brand" data-tauri-drag-region>
+  <header class="titlebar" data-tauri-drag-region="deep">
+    <div class="titlebar__brand">
       <AppLogo :size="24" />
       <span class="titlebar__name">文屿</span>
     </div>
@@ -192,6 +246,29 @@ async function closeTab(id: string) {
           <PanelRightOpen v-else :size="16" />
         </button>
       </div>
+    </div>
+
+    <div v-if="currentWindow" class="window-controls">
+      <button class="window-control" aria-label="最小化" title="最小化" @click="minimizeWindow">
+        <Minus :size="15" />
+      </button>
+      <button
+        class="window-control"
+        :aria-label="windowMaximized ? '还原窗口' : '最大化'"
+        :title="windowMaximized ? '还原窗口' : '最大化'"
+        @click="toggleMaximizeWindow"
+      >
+        <Copy v-if="windowMaximized" :size="12" />
+        <Square v-else :size="11" />
+      </button>
+      <button
+        class="window-control window-control--close"
+        aria-label="关闭窗口"
+        title="关闭窗口"
+        @click="closeWindow"
+      >
+        <X :size="15" />
+      </button>
     </div>
   </header>
 </template>
