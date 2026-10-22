@@ -54,6 +54,14 @@
   color: var(--text);
 }
 
+.titlebar__view {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  margin-right: 4px;
+}
+
 .titlebar__tabs {
   display: flex;
   align-items: center;

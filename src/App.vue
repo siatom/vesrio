@@ -271,6 +271,12 @@ function onKeydown(event: KeyboardEvent) {
     ui.paletteOpen = !ui.paletteOpen
     return
   }
+  if (key === 'b') {
+    event.preventDefault()
+    if (event.altKey) void settings.update({ inspectorOpen: !settings.inspectorOpen })
+    else void settings.update({ sidebarOpen: !settings.sidebarOpen })
+    return
+  }
   if (event.key === ',' || key === ',') {
     event.preventDefault()
     ui.settingsOpen = true
