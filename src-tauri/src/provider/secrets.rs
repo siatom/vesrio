@@ -1,4 +1,10 @@
 //! OS credential storage. API keys never enter SQLite, JSON files or logs.
+//!
+//! Each supported platform must enable its native keyring backend in
+//! `Cargo.toml`. Without a backend, keyring silently falls back to an
+//! in-memory mock that cannot persist anything; [`backend_name`] makes the
+//! active backend observable so the settings UI and release checks can treat
+//! `unsupported` as a failure instead of claiming the key was saved.
 
 use crate::error::{AppError, AppResult};
 
@@ -6,6 +12,38 @@ pub trait SecretStore: Send + Sync {
     fn get(&self) -> AppResult<Option<String>>;
     fn set(&self, secret: &str) -> AppResult<()>;
     fn delete(&self) -> AppResult<()>;
+
+    /// Stable identifier for the active backend, shown in the settings UI.
+    fn backend(&self) -> &'static str {
+        "unknown"
+    }
+}
+
+/// Native credential store selected at compile time.
+pub fn backend_name() -> &'static str {
+    if cfg!(target_os = "windows") {
+        "windows-credential-manager"
+    } else if cfg!(target_os = "macos") {
+        "macos-keychain"
+    } else if cfg!(target_os = "linux") {
+        "linux-secret-service"
+    } else {
+        "unsupported"
+    }
+}
+
+fn credential_error(action: &str, error: impl std::fmt::Display) -> AppError {
+    let hint = if cfg!(target_os = "linux") {
+        " Ensure a D-Bus session and a Secret Service provider (GNOME Keyring or KWallet) are running."
+    } else if cfg!(target_os = "macos") {
+        " Ensure Keychain access is allowed for Vesrio."
+    } else {
+        ""
+    };
+    AppError::storage(format!(
+        "could not {action} the API key with {}{hint} (details: {error})",
+        backend_name()
+    ))
 }
 
 pub struct KeyringStore {
@@ -26,17 +64,22 @@ impl Default for KeyringStore {
         } else {
             "com.vesrio.app".into()
         };
-        Self {
-            service,
-            account: "provider-default".into(),
-        }
+        Self::with_service(service, "provider-default")
     }
 }
 
 impl KeyringStore {
+    /// Construct a store for a specific service/account pair. Tests use this
+    /// with a throwaway service name so they never touch the real API key.
+    pub fn with_service(service: impl Into<String>, account: impl Into<String>) -> Self {
+        Self {
+            service: service.into(),
+            account: account.into(),
+        }
+    }
+
     fn entry(&self) -> AppResult<keyring::Entry> {
-        keyring::Entry::new(&self.service, &self.account)
-            .map_err(|e| AppError::storage(format!("credential store unavailable: {e}")))
+        keyring::Entry::new(&self.service, &self.account).map_err(|e| credential_error("access", e))
     }
 }
 
@@ -46,9 +89,7 @@ impl SecretStore for KeyringStore {
             Ok(value) if !value.is_empty() => Ok(Some(value)),
             Ok(_) => Ok(None),
             Err(keyring::Error::NoEntry) => Ok(None),
-            Err(error) => Err(AppError::storage(format!(
-                "could not read API key from credential store: {error}"
-            ))),
+            Err(error) => Err(credential_error("read", error)),
         }
     }
 
@@ -58,16 +99,18 @@ impl SecretStore for KeyringStore {
         }
         self.entry()?
             .set_password(secret.trim())
-            .map_err(|e| AppError::storage(format!("could not store API key: {e}")))
+            .map_err(|e| credential_error("store", e))
     }
 
     fn delete(&self) -> AppResult<()> {
         match self.entry()?.delete_credential() {
             Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
-            Err(error) => Err(AppError::storage(format!(
-                "could not delete API key: {error}"
-            ))),
+            Err(error) => Err(credential_error("delete", error)),
         }
+    }
+
+    fn backend(&self) -> &'static str {
+        backend_name()
     }
 }
 
@@ -93,5 +136,38 @@ impl SecretStore for MemoryStore {
     fn delete(&self) -> AppResult<()> {
         *self.0.lock().unwrap() = None;
         Ok(())
+    }
+    fn backend(&self) -> &'static str {
+        "memory-test"
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn backend_name_matches_the_target() {
+        let expected = if cfg!(target_os = "windows") {
+            "windows-credential-manager"
+        } else if cfg!(target_os = "macos") {
+            "macos-keychain"
+        } else if cfg!(target_os = "linux") {
+            "linux-secret-service"
+        } else {
+            "unsupported"
+        };
+        assert_eq!(backend_name(), expected);
+    }
+
+    #[test]
+    fn memory_store_round_trip_never_touches_the_os_store() {
+        let store = MemoryStore::default();
+        assert_eq!(store.get().unwrap(), None);
+        store.set("test-key").unwrap();
+        assert_eq!(store.get().unwrap().as_deref(), Some("test-key"));
+        store.delete().unwrap();
+        assert_eq!(store.get().unwrap(), None);
+        assert_eq!(store.backend(), "memory-test");
     }
 }

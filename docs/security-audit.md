@@ -8,7 +8,7 @@
 | 资产 | 位置 | 风险 |
 | --- | --- | --- |
 | 用户 Markdown 正文 | 用户选择的任意本地路径 | 丢失、损坏、静默改写、越权外发 |
-| API Key | Windows 凭据管理器 | 明文落盘、日志泄露、前端读取 |
+| API Key | 系统凭据库（Windows Credential Manager / macOS Keychain / Linux Secret Service） | 明文落盘、日志泄露、前端读取、后端静默降级 |
 | 建议/会话/风格/快照 | `%APPDATA%\com.vesrio.app` | 跨文档串扰、越权持久化 |
 | 模型请求 | 用户配置的 Base URL | 超出授权范围发送、注入 |
 | 安装包与依赖 | `src-tauri/target/release/bundle` | 供应链、未签名分发 |
@@ -25,11 +25,13 @@
 
 ### 3.1 API Key
 
-- 存储：`provider::secrets::KeyringStore` → Windows Credential Manager，service `com.vesrio.app`，account `provider-default`。
-- 测试隔离：仅 debug 构建允许用 `VESRIO_SECRET_SERVICE` 指向一次性 service，桌面 E2E 不读取/覆盖真实 Key；release 构建忽略该环境变量。
-- SQLite 的 `provider_configs` 表无 key 列；`get_provider_config` 只返回 `hasApiKey`。
-- 前端输入框为 `type="password"`，保存后清空；界面只显示「已安全保存」。
+- 存储：`provider::secrets::KeyringStore` → 按平台选择原生凭据库：Windows Credential Manager、macOS Keychain、Linux Secret Service；service `com.vesrio.app`，account `provider-default`。
+- 后端不可用：`get_provider_config` 返回 `credentialBackend` 与 `credentialError`，设置页显示可操作错误并禁用连接测试；不降级到明文文件、SQLite 或内存 mock。
+- 测试隔离：仅 debug 构建允许用 `VESRIO_SECRET_SERVICE` 指向一次性 service，桌面 E2E 不读取/覆盖真实 Key；release 构建忽略该环境变量。真实后端回归测试使用 `KeyringStore::with_service` 的一次性 service。
+- SQLite 的 `provider_configs` 表无 key 列；`get_provider_config` 只返回 `hasApiKey` 与后端状态，不返回 key。
+- 前端输入框为 `type="password"`，保存后清空；界面按平台显示「已安全保存」。
 - 清除 Key：设置页「移除 API Key」调用 `delete_credential`。
+- 保存顺序：先写凭据库，成功后才写入 provider 配置；凭据库失败时配置不变。
 
 证据：
 
@@ -37,8 +39,12 @@
 src-tauri/migrations/0001_init.sql  provider_configs: base_url, model, timeout_ms,
                                     temperature, max_tokens, updated_at（无 key 列）
 src-tauri/src/provider/secrets.rs   keyring::{set_password,get_password,delete_credential}
-src-tauri/src/storage/models.rs     ProviderConfigView.has_api_key: bool
+src-tauri/tests/keyring_roundtrip.rs  真实后端 roundtrip（显式 --ignored 运行）
+src-tauri/src/storage/models.rs     ProviderConfigView: has_api_key, credential_backend,
+                                    credential_error
 ```
+
+验证状态：Windows Credential Manager roundtrip 已通过（2026-10-22）；macOS Keychain 与 Linux Secret Service 待实机验证（VES-057/068）。
 
 ### 3.2 日志脱敏
 

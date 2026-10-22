@@ -4,6 +4,8 @@
 - 日期：2026-10-22
 - 关联：VES-009、VES-019、VES-020、VES-052
 
+> V0.2 起，凭据后端与 Unix 保存语义由 [ADR-010](./ADR-010-cross-platform-support.md) 扩展；本文保留 V0.1 的 Windows 决策记录。
+
 ## 决策
 
 1. 保存写入同目录临时文件 → `flush` + `sync_all` → Windows `ReplaceFileW` 替换目标；不支持时回退到「备份—替换—失败恢复」。

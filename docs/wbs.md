@@ -299,7 +299,7 @@ pnpm tauri build                              PASS  NSIS Vesrio_0.1.0_x64-setup.
 | --- | --- | --- |
 | VES-055 | Done | 计划与 ADR-010 已于 2026-10-22 获负责人确认 |
 | VES-056 | Done | 适配层与审计完成；CI run 39794658980 验证三平台编译 |
-| VES-057 | In Progress | 分平台凭据后端实施中 |
+| VES-057 | In Review | 分平台原生凭据后端与 UI 错误状态完成；Windows roundtrip 通过，macOS/Linux 待实机 |
 | VES-066 | Done | CI 首次运行四任务全绿（run 39794658980） |
 | VES-058～VES-065、VES-067～VES-071 | Todo | 依赖见 §9.4 |
 

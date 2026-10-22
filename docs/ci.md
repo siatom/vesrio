@@ -34,7 +34,7 @@ CI 负责证明“同一提交在三个平台上至少可安装依赖、通过�
 说明：
 
 1. `macos-15` 为 arm64 runner；Intel/universal2 产物在 VES-061/062 处理。GitHub 已宣布 `macos-14` 于 2026-11-02 退役，因此不使用该标签。
-2. Linux 任务安装 Tauri 2 所需的 WebKitGTK 4.1、AppIndicator、librsvg、patchelf 等系统依赖。
+2. Linux 任务安装 Tauri 2 所需的 WebKitGTK 4.1、AppIndicator、librsvg、patchelf 与 D-Bus 开发依赖（后者供 Secret Service 凭据后端编译）。
 3. 任一平台失败不会取消其他平台（`fail-fast: false`），便于一次看到全部差异。
 4. 同一 PR 的新提交会取消旧运行（`concurrency`）。
 
@@ -88,4 +88,5 @@ Windows 桌面烟测仍是独立命令：`pnpm test:desktop`（VES-067 会按平
 1. CI 不运行 Tauri 桌面窗口，不能替代实机走查。
 2. macOS 无 CDP，桌面 E2E 仍按 VES-067 的脚本化人工验收执行。
 3. Linux 依赖 `libwebkit2gtk-4.1-dev`；若未来支持更老发行版，需要单独矩阵和依赖声明。
-4. 证书、签名与公证凭据尚未配置，当前工作流不需要任何 secret。
+4. CI 不启动 Keychain / Secret Service；凭据运行时与实机走查仍需 VES-057/068。
+5. 证书、签名与公证凭据尚未配置，当前工作流不需要任何 secret。

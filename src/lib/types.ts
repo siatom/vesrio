@@ -93,6 +93,8 @@ export interface ProviderConfig {
 
 export interface ProviderConfigView extends ProviderConfig {
   hasApiKey: boolean
+  credentialBackend: string
+  credentialError: string | null
 }
 
 export interface ProviderTestResult {
