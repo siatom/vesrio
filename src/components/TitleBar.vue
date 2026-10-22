@@ -5,6 +5,10 @@ import {
   History,
   Maximize2,
   Moon,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
   Save,
   ScanEye,
   Settings,
@@ -78,6 +82,29 @@ async function closeTab(id: string) {
     <div class="titlebar__brand" data-tauri-drag-region>
       <AppLogo :size="24" />
       <span class="titlebar__name">文屿</span>
+    </div>
+
+    <div v-if="!settings.focusMode" class="titlebar__view">
+      <button
+        class="icon-button"
+        :aria-pressed="settings.sidebarOpen"
+        :aria-label="settings.sidebarOpen ? '收起左侧栏' : '展开左侧栏'"
+        :title="settings.sidebarOpen ? '收起左侧栏 (Ctrl+B)' : '展开左侧栏 (Ctrl+B)'"
+        @click="settings.update({ sidebarOpen: !settings.sidebarOpen })"
+      >
+        <PanelLeftClose v-if="settings.sidebarOpen" :size="16" />
+        <PanelLeftOpen v-else :size="16" />
+      </button>
+      <button
+        class="icon-button"
+        :aria-pressed="settings.inspectorOpen"
+        :aria-label="settings.inspectorOpen ? '收起右侧栏' : '展开右侧栏'"
+        :title="settings.inspectorOpen ? '收起右侧栏 (Ctrl+Alt+B)' : '展开右侧栏 (Ctrl+Alt+B)'"
+        @click="settings.update({ inspectorOpen: !settings.inspectorOpen })"
+      >
+        <PanelRightClose v-if="settings.inspectorOpen" :size="16" />
+        <PanelRightOpen v-else :size="16" />
+      </button>
     </div>
 
     <div class="titlebar__tabs" role="tablist" aria-label="打开的文档">

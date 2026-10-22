@@ -15,6 +15,22 @@ test.describe('desktop shell', () => {
     await expect(page.locator('.sidebar')).toBeVisible()
   })
 
+  test('restores collapsed panels even when no document is open', async ({ page }) => {
+    await bootApp(page)
+    await page.keyboard.press('Control+w')
+    await expect(page.locator('.empty-state')).toBeVisible()
+
+    await page.getByRole('button', { name: '收起侧栏' }).click()
+    await expect(page.locator('.sidebar')).toBeHidden()
+    await page.getByRole('button', { name: '收起右侧面板' }).click()
+    await expect(page.locator('.inspector')).toBeHidden()
+
+    await page.getByRole('button', { name: '展开左侧栏' }).click()
+    await expect(page.locator('.sidebar')).toBeVisible()
+    await page.getByRole('button', { name: '展开右侧栏' }).click()
+    await expect(page.locator('.inspector')).toBeVisible()
+  })
+
   test('command palette finds and runs a command', async ({ page }) => {
     await bootApp(page)
     await page.keyboard.press('Control+k')

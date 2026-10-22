@@ -30,6 +30,8 @@ const groups = [
   {
     title: '界面',
     items: [
+      ['Ctrl + B', '收起 / 展开左侧栏'],
+      ['Ctrl + Alt + B', '收起 / 展开右侧栏'],
       ['Ctrl + Shift + F', '专注模式（Esc 退出）'],
       ['Ctrl + Shift + R', '审阅模式'],
       ['Ctrl + 1 / 2 / 3', '大纲 / Agent / 修订'],

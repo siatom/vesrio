@@ -4,21 +4,17 @@ import {
   AlertTriangle,
   Code2,
   Eye,
-  PanelLeftOpen,
-  PanelRightOpen,
   Sparkles,
 } from 'lucide-vue-next'
 import SelectionToolbar from './SelectionToolbar.vue'
 import SuggestionCard from '@/features/inline-ai/SuggestionCard.vue'
 import { useEditor } from './useEditor'
-import { useSettingsStore } from '@/stores/settings'
 import { useSuggestionsStore } from '@/stores/suggestions'
 import { useUiStore } from '@/stores/ui'
 import { useWorkspaceStore } from '@/stores/workspace'
 import { friendlyMessage } from '@/lib/errors'
 
 const workspace = useWorkspaceStore()
-const settings = useSettingsStore()
 const suggestions = useSuggestionsStore()
 const ui = useUiStore()
 
@@ -67,15 +63,6 @@ async function saveAs() {
 <template>
   <section v-if="tab" class="editor-pane">
     <header class="editor-toolbar">
-      <button
-        v-if="!settings.sidebarOpen"
-        class="icon-button"
-        aria-label="展开左侧栏"
-        title="展开左侧栏"
-        @click="settings.update({ sidebarOpen: true })"
-      >
-        <PanelLeftOpen :size="15" />
-      </button>
       <div class="editor-toolbar__doc">
         <span class="editor-toolbar__title">{{ tab.document.title }}</span>
         <span class="editor-toolbar__path" :title="tab.document.path">{{ tab.document.path }}</span>
@@ -88,15 +75,6 @@ async function saveAs() {
         </button>
         <button class="toolbar-button toolbar-button--ai" title="选中文字后请求 AI 建议 (Ctrl+J)" @click="openInlineAi">
           <Sparkles :size="14" /> AI 建议
-        </button>
-        <button
-          v-if="!settings.inspectorOpen"
-          class="icon-button"
-          aria-label="展开右侧栏"
-          title="展开右侧栏"
-          @click="settings.update({ inspectorOpen: true })"
-        >
-          <PanelRightOpen :size="15" />
         </button>
       </div>
     </header>
